@@ -39,8 +39,9 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className={`login is-${periodo(hora)}`}>
+    <div className={`login is-${periodo(hora)} ${CICLO ? 'is-ciclo' : ''}`}>
       <Landscape hora={hora} />
+      {CICLO && <Relogio hora={hora} />}
       <div className="login-grain" aria-hidden="true" />
 
       <motion.div
@@ -277,6 +278,9 @@ function sceneAt(h) {
 const periodo = (h) => (h >= 5 && h < 12 ? 'manha' : h >= 12 && h < 18 ? 'tarde' : 'noite')
 const saudacao = (h) => ({ manha: 'Bom dia', tarde: 'Boa tarde', noite: 'Boa noite' })[periodo(h)]
 
+// Em desenvolvimento: /?login&ciclo passa as 24 horas em ~40 segundos (para ver a transição).
+const CICLO = import.meta.env.DEV && new URLSearchParams(location.search).has('ciclo')
+
 function useHora() {
   const forced = import.meta.env.DEV ? new URLSearchParams(location.search).get('hora') : null
   const read = () => {
@@ -284,12 +288,30 @@ function useHora() {
     const d = new Date()
     return d.getHours() + d.getMinutes() / 60
   }
-  const [h, setH] = useState(read)
+  const [h, setH] = useState(() => (CICLO ? 5 : read()))
   useEffect(() => {
+    if (CICLO) {
+      const start = performance.now()
+      const t = setInterval(() => setH((5 + ((performance.now() - start) / 1000) * 0.6) % 24), 50)
+      return () => clearInterval(t)
+    }
     const t = setInterval(() => setH(read()), 60_000)
     return () => clearInterval(t)
   }, [])
   return h
+}
+
+function Relogio({ hora }) {
+  const hh = String(Math.floor(hora)).padStart(2, '0')
+  const mm = String(Math.floor((hora % 1) * 60)).padStart(2, '0')
+  return (
+    <div className="login-clock" aria-hidden="true">
+      <b className="tnum">
+        {hh}:{mm}
+      </b>
+      <span>{saudacao(hora)}</span>
+    </div>
+  )
 }
 
 // arco no céu: entra pela esquerda, sobe e desce pela direita
