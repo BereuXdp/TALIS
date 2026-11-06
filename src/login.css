@@ -98,9 +98,3 @@
 @keyframes flock-fly { from { transform: translateX(-200px); } to { transform: translateX(1820px); } }
 @keyframes flock-bob { 0% { transform: translateY(-18px); } 50% { transform: translateY(6px); } 100% { transform: translateY(16px); } }
 @media (prefers-reduced-motion: reduce) { .birds { display: none; } }
-
-/* modo de demonstração do ciclo do dia (só em desenvolvimento) */
-.login.is-ciclo .login-bg path, .login.is-ciclo .login-bg stop, .login.is-ciclo .login-bg g, .login.is-ciclo .login-sky-body circle { transition: none; }
-.login-clock { position: absolute; z-index: 2; top: 20px; right: 20px; display: flex; align-items: baseline; gap: 10px; padding: 10px 16px; border-radius: 14px; background: rgba(20,20,20,.55); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(10px); color: #f2efe9; }
-.login-clock b { font: 600 22px var(--num); letter-spacing: -.02em; }
-.login-clock span { font-size: 12.5px; color: rgba(242,239,233,.7); }
