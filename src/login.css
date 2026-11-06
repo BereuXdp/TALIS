@@ -67,8 +67,8 @@
 .login-demo { align-self: center; display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: rgba(242,239,233,.55); font-size: 12px; cursor: pointer; }
 .login-demo:hover { color: #fff; }
 
-.login-quote { font-size: 12px; color: rgba(242,239,233,.5); }
-.login-quote span { font-family: var(--greek); font-size: 14px; color: rgba(242,239,233,.8); }
+.login-quote { font-size: 12.5px; color: rgba(242,239,233,.62); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.login-quote span { font-family: var(--greek); font-weight: 500; font-size: 17px; letter-spacing: .01em; color: rgba(242,239,233,.92); }
 
 /* lado da arte: cérebro em pontilhado dissolvendo no vidro */
 .login-art {
@@ -90,3 +90,13 @@
 .login-bg path, .login-bg stop, .login-bg g { transition: fill 2.5s ease, stop-color 2.5s ease, opacity 2.5s ease; }
 .login-bg .login-sky-body circle { transition: cx 2.5s ease, cy 2.5s ease, fill 2.5s ease; }
 .login.is-noite .login-grain { opacity: .5; }
+
+/* pássaros: o bando atravessa o céu e ondula; asas e oscilação são SMIL no SVG */
+.birds { fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: opacity 2.5s ease; }
+.birds .bird-body { stroke: none; fill: currentColor; }
+.birds g[style*="stroke"] { color: inherit; }
+.flock { animation: flock-fly linear infinite; }
+.flock-bob { animation: flock-bob ease-in-out infinite alternate; }
+@keyframes flock-fly { from { transform: translateX(-200px); } to { transform: translateX(1820px); } }
+@keyframes flock-bob { 0% { transform: translateY(-18px); } 50% { transform: translateY(6px); } 100% { transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .birds { display: none; } }

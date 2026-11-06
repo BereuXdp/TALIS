@@ -37,7 +37,7 @@
   --font: 'Inter', system-ui, sans-serif;
   --display: 'Cinzel', 'Times New Roman', serif;   /* títulos: romano, como a logo */
   --num: 'Inter', system-ui, sans-serif;            /* números: legíveis */
-  --greek: 'GFS Didot', 'Cinzel', serif;
+  --greek: 'Noto Serif', 'Times New Roman', serif;
   --key-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' fill='none' stroke='%23262626' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M0 11.3H16M2 11.3V1.3H14V8H6V4.3H10V6'/%3E%3C/svg%3E");
   --key-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' fill='none' stroke='%23E9E5DC' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M0 11.3H16M2 11.3V1.3H14V8H6V4.3H10V6'/%3E%3C/svg%3E");
   --sidebar: 248px;

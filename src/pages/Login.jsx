@@ -147,7 +147,7 @@ export default function Login({ onLogin }) {
           </form>
 
           <p className="login-quote">
-            <span lang="grc">Γνῶθι σεαυτόν</span> · conhece-te a ti mesmo
+            <span lang="grc">Γνῶθι σεαυτόν</span> “Conhece-te a ti mesmo”
           </p>
         </div>
 
@@ -405,9 +405,94 @@ function Landscape({ hora }) {
           <path d={l.d} style={{ fill: s.ridges[i] }} />
           {i < 5 && <path d={l.d} fill="url(#mist)" style={{ opacity: s.mist }} />}
           {i === 2 && <Temple x={temple.x} y={temple.y} color={s.ridges[2]} lit={s.moon > 0.5} />}
+          {/* pássaros voam entre a serra do fundo e a seguinte */}
+          {i === 0 && <Birds night={s.moon > 0.5} />}
         </g>
       ))}
     </svg>
+  )
+}
+
+/* ---------- Pássaros ----------
+   Bandos em "V" solto cruzando o céu de forma orgânica:
+   - as asas mudam de forma (cima → meio → baixo) com SMIL <animate>, como um bater de asa real;
+   - de tempos em tempos o pássaro plana (asas abertas paradas);
+   - cada pássaro oscila no próprio ritmo dentro do bando;
+   - bandos mais distantes são menores, mais lentos e mais claros. */
+const WING = {
+  up: 'M-13 -8 C-9 -8 -4 -5 0 0 C4 -5 9 -8 13 -8',
+  mid: 'M-13 -1 C-9 -4 -4 -4 0 0 C4 -4 9 -4 13 -1',
+  down: 'M-12 6 C-8 1 -4 0 0 0 C4 0 8 1 12 6',
+  glide: 'M-13 -2 C-9 -3 -4 -2 0 0 C4 -2 9 -3 13 -2',
+}
+// ciclo: bate 3 vezes e plana um pouco
+const FLAP_D = [WING.mid, WING.up, WING.mid, WING.down, WING.mid, WING.up, WING.mid, WING.down, WING.mid, WING.up, WING.mid, WING.down, WING.glide, WING.glide, WING.mid].join(';')
+const FLAP_T = '0;0.07;0.14;0.21;0.28;0.35;0.42;0.49;0.56;0.63;0.7;0.77;0.84;0.96;1'
+
+const FLOCKS = [
+  { y: 150, dur: 62, delay: -6, scale: 1.25, n: 7, tone: 1 },
+  { y: 240, dur: 80, delay: -44, scale: 0.9, n: 5, tone: 0.75 },
+  { y: 100, dur: 105, delay: -78, scale: 0.65, n: 4, tone: 0.55 },
+]
+
+function Birds({ night }) {
+  const flocks = useMemo(() => {
+    let seed = 23
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+    return FLOCKS.map((f) => ({
+      ...f,
+      birds: Array.from({ length: f.n }, (_, k) => {
+        // formação em V: líder na frente, os outros alternando atrás, em cima e embaixo
+        const row = Math.ceil(k / 2)
+        const side = k % 2 ? -1 : 1
+        return {
+          x: -row * 34 + (rnd() - 0.5) * 12,
+          y: side * row * 17 + (rnd() - 0.5) * 10,
+          s: 0.85 + rnd() * 0.3,
+          flap: 2.6 + rnd() * 1.4, // duração do ciclo bater+planar
+          begin: -rnd() * 4,
+          sway: 3.5 + rnd() * 3, // oscilação própria dentro do bando
+          dx: 4 + rnd() * 6,
+          dy: 5 + rnd() * 7,
+        }
+      }),
+    }))
+  }, [])
+  return (
+    <g className="birds" style={{ opacity: night ? 0.45 : 0.8 }}>
+      {flocks.map((f, i) =>
+        night && i > 0 ? null : (
+          <g key={i} className="flock" style={{ animationDuration: `${f.dur}s`, animationDelay: `${f.delay}s` }}>
+            <g className="flock-bob" style={{ animationDuration: `${9 + i * 3}s`, animationDelay: `${f.delay / 3}s` }}>
+              <g transform={`translate(0 ${f.y}) scale(${f.scale})`} style={{ color: night ? '#bfbfbd' : '#262626', stroke: 'currentColor', opacity: f.tone }}>
+                {f.birds.map((b, k) => (
+                  <g key={k} transform={`translate(${b.x} ${b.y})`}>
+                    <g>
+                      <animateTransform
+                        attributeName="transform"
+                        type="translate"
+                        values={`0 0; ${b.dx} ${-b.dy}; ${-b.dx / 2} ${b.dy / 2}; 0 0`}
+                        dur={`${b.sway}s`}
+                        begin={`${b.begin}s`}
+                        repeatCount="indefinite"
+                        calcMode="spline"
+                        keySplines="0.45 0 0.55 1; 0.45 0 0.55 1; 0.45 0 0.55 1"
+                      />
+                      <g transform={`scale(${b.s})`}>
+                        <path d={WING.mid}>
+                          <animate attributeName="d" values={FLAP_D} keyTimes={FLAP_T} dur={`${b.flap}s`} begin={`${b.begin}s`} repeatCount="indefinite" />
+                        </path>
+                        <ellipse cx="0" cy="0.6" rx="1.6" ry="1.1" className="bird-body" />
+                      </g>
+                    </g>
+                  </g>
+                ))}
+              </g>
+            </g>
+          </g>
+        ),
+      )}
+    </g>
   )
 }
 
