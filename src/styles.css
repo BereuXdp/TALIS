@@ -35,7 +35,11 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
   --font: 'Inter', system-ui, sans-serif;
-  --display: 'Bricolage Grotesque', 'Inter', sans-serif;
+  --display: 'Cinzel', 'Times New Roman', serif;   /* títulos: romano, como a logo */
+  --num: 'Inter', system-ui, sans-serif;            /* números: legíveis */
+  --greek: 'GFS Didot', 'Cinzel', serif;
+  --key-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' fill='none' stroke='%23262626' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M0 11.3H16M2 11.3V1.3H14V8H6V4.3H10V6'/%3E%3C/svg%3E");
+  --key-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' fill='none' stroke='%23E9E5DC' stroke-width='1.4' stroke-linecap='square'%3E%3Cpath d='M0 11.3H16M2 11.3V1.3H14V8H6V4.3H10V6'/%3E%3C/svg%3E");
   --sidebar: 248px;
 }
 
@@ -49,7 +53,8 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 #root { min-height: 100%; }
-h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; letter-spacing: -0.02em; color: var(--text); }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; letter-spacing: 0.01em; color: var(--text); }
+h1 { font-weight: 500; }
 h1 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; }
 h2 { font-size: 17px; }
 h3 { font-size: 14px; font-family: var(--font); letter-spacing: 0; }
@@ -301,7 +306,7 @@ td.actions { text-align: right; white-space: nowrap; }
 .tile { display: flex; flex-direction: column; gap: 4px; padding: 18px 20px; }
 .tile-label { font-size: 12.5px; color: var(--text-2); font-weight: 500; display: flex; align-items: center; gap: 8px; }
 .tile-label .ic { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; background: var(--surface-2); color: var(--rose); }
-.tile-value { font: 600 30px/1.1 var(--display); letter-spacing: -0.03em; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.tile-value { font: 600 30px/1.1 var(--num); letter-spacing: -0.03em; margin-top: 8px; font-variant-numeric: tabular-nums; }
 .tile-sub { font-size: 12px; color: var(--text-3); }
 .trend { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 2px; }
 .trend.up { color: var(--ok); }

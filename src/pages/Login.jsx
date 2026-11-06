@@ -131,9 +131,12 @@ function Showcase() {
     <div className="auth-art" aria-hidden="true">
       <div className="auth-art-glow" />
       <div className="auth-copy">
-        <span className="badge" style={{ background: 'rgba(233, 229, 220,.1)', color: 'var(--blush)' }}>
-          <span className="dot" /> Agente online 24h
-        </span>
+        <blockquote className="auth-quote">
+          <span className="grc" lang="grc">Γνῶθι σεαυτόν</span>
+          <p>
+            “Conhece-te a ti mesmo.” <b>· Tales de Mileto</b>
+          </p>
+        </blockquote>
         <h2>Atende, tira dúvidas e fecha a venda, enquanto sua equipe cuida do resto.</h2>
       </div>
       <div className="phone">

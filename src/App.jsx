@@ -88,6 +88,7 @@ export default function App() {
     <div className="shell">
       <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
         <Brand />
+        <div className="meander light" aria-hidden="true" />
         <div className="org-chip">
           <Avatar name={org?.name ?? '…'} />
           <div className="grow">
