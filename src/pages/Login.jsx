@@ -9,7 +9,8 @@ import { BRAIN } from '../brand.js'
 /* Tela de login: paisagem em preto e branco com granulado e um card de vidro.
    À direita, o cérebro da logo em pontilhado, se dissolvendo no vidro. */
 export default function Login({ onLogin }) {
-  const [mode, setMode] = useState('login')
+  // /?cadastro (vindo da landing) abre direto em "Criar conta"
+  const [mode, setMode] = useState(() => (new URLSearchParams(location.search).has('cadastro') ? 'register' : 'login'))
   const [form, setForm] = useState({ company: '', name: '', email: '', password: '' })
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
