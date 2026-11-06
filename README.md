@@ -54,6 +54,5 @@ node tools/logo.mjs
 
 Fica em `site/index.html` (código em `src/site`). Em desenvolvimento: http://localhost:5180/site/
 
-- Busto 3D: escaneamento "Herm of Plato" do Three D Scans (threedscans.com), domínio público, otimizado para `public/models/plato.glb` (~570 KB) com obj2gltf + gltf-transform (simplify + meshopt).
 - Imagens das estátuas: `public/site` (geradas por `node tools/site-images.mjs <busto> <leitor>`).
 - Links "Entrar" e "Começar" apontam para o painel. Em produção defina `VITE_APP_URL` (ex.: https://app.seudominio.com.br). `?cadastro` abre o painel direto em "Criar conta".

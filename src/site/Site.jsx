@@ -1,11 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
 import {
   ArrowRight, ArrowUpRight, BookOpen, Bot, Clock, Hand, LayoutDashboard, MessageCircle, Minus, Plus, QrCode, Smartphone, Users,
 } from 'lucide-react'
 import { BRAIN, WORD } from '../brand.js'
-
-const Bust3D = lazy(() => import('./Bust3D.jsx'))
 
 // Endereço do painel (login). Em produção, defina VITE_APP_URL (ex.: https://app.talis.com.br).
 const APP = import.meta.env.VITE_APP_URL || '/'
@@ -87,11 +85,9 @@ function Nav() {
 
 /* ---------- Hero: TALIS gigante atrás do busto 3D ---------- */
 function Hero() {
-  const [ready, setReady] = useState(false)
   const { scrollY } = useScroll()
   const wordY = useTransform(scrollY, [0, 600], [0, 120])
   const bustY = useTransform(scrollY, [0, 600], [0, -60])
-  const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 
   return (
     <section className="s-hero" id="topo">
@@ -103,14 +99,15 @@ function Hero() {
       </motion.div>
 
       <motion.div className="s-hero-bust" style={{ y: bustY }} aria-hidden="true">
-        <div className={`s-halo ${ready ? 'on' : ''}`} />
-        {!reduce ? (
-          <Suspense fallback={<img src="/site/busto.webp" alt="" className="s-bust-fallback" />}>
-            <Bust3D onReady={() => setReady(true)} />
-          </Suspense>
-        ) : (
-          <img src="/site/busto.webp" alt="" className="s-bust-fallback" />
-        )}
+        <div className="s-halo on" />
+        <motion.img
+          src="/site/busto.webp"
+          alt=""
+          className="s-bust-img"
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.6, ease }}
+        />
       </motion.div>
 
       <div className="s-hero-copy">
@@ -309,7 +306,6 @@ function Features() {
 function Name() {
   return (
     <section className="s-name">
-      <motion.img src="/site/busto.webp" alt="Busto de mármore de um filósofo grego iluminado por um feixe de luz" loading="lazy" className="s-name-img" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1.4 }} />
       <motion.div className="s-name-copy" {...reveal}>
         <span className="s-eyebrow">Por que TALIS</span>
         <h2>Um nome que vem de Tales de Mileto.</h2>
@@ -407,7 +403,6 @@ function Footer() {
       <div className="s-footer-row">
         <Logo />
         <span>© {new Date().getFullYear()} TALIS · Devmais</span>
-        <span className="s-credit">Busto 3D: escaneamento do Herm of Plato por Three D Scans (threedscans.com), Institut für Klassische Archäologie, Viena.</span>
       </div>
     </footer>
   )

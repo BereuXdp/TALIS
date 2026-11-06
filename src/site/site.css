@@ -203,3 +203,10 @@ a { color: inherit; text-decoration: none; }
 .s-hero-copy { grid-column: 1; grid-row: 1; }
 .s-hero-bust { grid-column: 2; grid-row: 1; }
 @media (max-width: 1000px) { .s-hero-copy, .s-hero-bust { grid-column: 1; } .s-hero-bust { grid-row: 1; } .s-hero-copy { grid-row: 2; } }
+
+/* imagem do busto no topo (substitui o 3D): funde com o fundo escuro */
+.s-bust-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: center;
+  -webkit-mask-image: radial-gradient(44% 50% at 50% 46%, #000 60%, transparent 100%); mask-image: radial-gradient(44% 50% at 50% 46%, #000 60%, transparent 100%); }
+/* "Por que TALIS" agora sem imagem: texto centralizado */
+.s-name { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+.s-name-copy { align-items: center; }
