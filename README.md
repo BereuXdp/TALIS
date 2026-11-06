@@ -38,7 +38,7 @@ Troque o conteúdo do frontend atual pelo `dist/`. O servidor precisa mandar tod
 - `src/components/charts.jsx`: gráfico de área, sparkline, anel e barra empilhada (SVG)
 - `src/pages/*`: as telas
 
-Paleta: `#190019` `#2B124C` `#522B5B` `#854F6C` `#DFB6B2` `#FBE4D8`.
+Paleta: `#262626` `#8C8C8C` `#BFBFBD` `#E9E5DC` `#F2EFE9`.
 Fontes: Bricolage Grotesque (títulos) e Inter (texto).
 
 ## Logo
