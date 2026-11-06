@@ -38,6 +38,9 @@ export default function App() {
   const [me, setMe] = useState(null)
   const [view, setView] = useState(fromPath)
   const [menuOpen, setMenuOpen] = useState(false)
+  // Em desenvolvimento, /?login mostra a tela de login mesmo logado (para revisar o visual).
+  // Ao entrar por ela, a pré-visualização é desligada e o painel abre normalmente.
+  const [previewLogin, setPreviewLogin] = useState(() => import.meta.env.DEV && new URLSearchParams(location.search).has('login'))
 
   useEffect(() => {
     if (token) api('/me').then(setMe).catch(() => setMe(null))
@@ -56,12 +59,20 @@ export default function App() {
     document.querySelector('.main')?.scrollIntoView({ block: 'start' })
   }
 
-  // Em desenvolvimento, /?login mostra a tela de login mesmo logado (para revisar o visual).
-  const previewLogin = import.meta.env.DEV && new URLSearchParams(location.search).has('login')
   if (!token || previewLogin)
     return (
       <>
-        <Login onLogin={(t) => (auth.set(t), setToken(t))} />
+        <Login
+          onLogin={(t) => {
+            auth.set(t)
+            setToken(t)
+            // saiu da pré-visualização: tira o ?login da barra e mostra o painel
+            if (previewLogin) {
+              history.replaceState(null, '', location.pathname)
+              setPreviewLogin(false)
+            }
+          }}
+        />
         <Toaster />
       </>
     )
