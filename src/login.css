@@ -1,0 +1,87 @@
+/* ==========================================================
+   Login: paisagem com granulado + card de vidro
+   ========================================================== */
+.login {
+  position: relative; min-height: 100vh; min-height: 100dvh; overflow: hidden;
+  display: grid; place-items: center; padding: 24px 16px; background: #8c8c8c; color: #f2efe9;
+}
+.login-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.login-grain {
+  position: absolute; inset: 0; pointer-events: none; opacity: .38; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1.4 -0.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.login-card {
+  position: relative; z-index: 1; width: min(980px, 100%); min-height: 560px;
+  display: grid; grid-template-columns: 1fr 1fr; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(135deg, rgba(70,70,70,.55), rgba(28,28,28,.45));
+  border: 1px solid rgba(255,255,255,.22);
+  box-shadow: 0 40px 100px -30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.18);
+  backdrop-filter: blur(18px) saturate(110%); -webkit-backdrop-filter: blur(18px) saturate(110%);
+}
+
+/* lado do formulário */
+.login-side { display: flex; flex-direction: column; padding: 32px 48px; min-width: 0; }
+.login-brand .brand { color: #f2efe9; padding: 0; }
+.login-brand .brand-icon { height: 28px; }
+.login-brand .brand-word { height: 15px; }
+.login-form { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 340px; margin: auto 0; padding: 32px 0; }
+.login-form h1 { color: #fff; font-family: var(--display); font-weight: 600; font-size: 30px; letter-spacing: .02em; }
+.login-sub { margin-top: 6px; font-size: 13.5px; color: rgba(242,239,233,.62); }
+.login-extra { display: flex; flex-direction: column; gap: 16px; overflow: hidden; }
+
+.login-field { display: flex; flex-direction: column; gap: 7px; font-size: 12.5px; font-weight: 600; color: rgba(242,239,233,.9); }
+.login-field > span { display: flex; justify-content: space-between; align-items: baseline; }
+.login-field em { font-style: normal; font-weight: 400; font-size: 11.5px; color: rgba(242,239,233,.55); }
+.login-field input {
+  width: 100%; height: 44px; padding: 0 18px; border-radius: 99px; font-size: 14px; color: #fff;
+  background: rgba(20,20,20,.22); border: 1px solid rgba(255,255,255,.2);
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+.login-field input::placeholder { color: rgba(242,239,233,.45); }
+.login-field input:focus { outline: none; border-color: rgba(255,255,255,.55); background: rgba(20,20,20,.32); box-shadow: 0 0 0 4px rgba(255,255,255,.08); }
+.login-field input:-webkit-autofill { -webkit-text-fill-color: #fff; transition: background-color 9999s; }
+.login-pass { position: relative; }
+.login-pass input { padding-right: 48px; }
+.login-pass button {
+  position: absolute; right: 6px; top: 50%; translate: 0 -50%; width: 34px; height: 34px; border-radius: 99px;
+  border: 0; background: none; color: rgba(242,239,233,.6); display: grid; place-items: center; cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) { .login-pass button:hover { color: #fff; background: rgba(255,255,255,.08); } }
+
+.login-error { padding: 10px 14px; border-radius: 12px; font-size: 13px; background: rgba(163,54,74,.35); border: 1px solid rgba(255,160,170,.3); color: #fff; }
+
+.login-submit {
+  margin-top: 6px; height: 48px; border-radius: 99px; border: 1px solid rgba(255,255,255,.08); cursor: pointer;
+  background: #141414; color: #f2efe9; font-weight: 600; font-size: 14px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  box-shadow: 0 10px 24px -10px rgba(0,0,0,.6);
+  transition: background-color 160ms ease, transform 160ms var(--ease-out), opacity 160ms ease;
+}
+.login-submit:active:not(:disabled) { transform: scale(0.98); }
+.login-submit:disabled { opacity: .6; cursor: default; }
+@media (hover: hover) and (pointer: fine) { .login-submit:hover:not(:disabled) { background: #000; } }
+
+.login-switch { text-align: center; font-size: 12.5px; color: rgba(242,239,233,.6); display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 4px; }
+.login-switch button { border: 0; background: none; color: #fff; font-weight: 600; font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 2px 4px; }
+.login-demo { align-self: center; display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: rgba(242,239,233,.55); font-size: 12px; cursor: pointer; }
+.login-demo:hover { color: #fff; }
+
+.login-quote { font-size: 12px; color: rgba(242,239,233,.5); }
+.login-quote span { font-family: var(--greek); font-size: 14px; color: rgba(242,239,233,.8); }
+
+/* lado da arte: cérebro em pontilhado dissolvendo no vidro */
+.login-art {
+  position: relative; min-width: 0;
+  background: linear-gradient(90deg, rgba(10,10,10,0) 0%, rgba(10,10,10,.75) 28%, #0b0b0b 55%);
+}
+.login-dots { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 900ms ease; }
+.login-dots.on { opacity: 1; }
+
+@media (max-width: 820px) {
+  .login-card { grid-template-columns: 1fr; min-height: 0; max-width: 460px; }
+  .login-art { display: none; }
+  .login-side { padding: 28px 28px 24px; }
+  .login-form { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) { .login-dots { transition: none; } }

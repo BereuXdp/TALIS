@@ -4,6 +4,7 @@ import { MotionConfig } from 'motion/react'
 import App from './App.jsx'
 import './styles.css'
 import './screens.css'
+import './login.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

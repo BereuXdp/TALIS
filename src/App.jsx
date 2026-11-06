@@ -56,7 +56,9 @@ export default function App() {
     document.querySelector('.main')?.scrollIntoView({ block: 'start' })
   }
 
-  if (!token)
+  // Em desenvolvimento, /?login mostra a tela de login mesmo logado (para revisar o visual).
+  const previewLogin = import.meta.env.DEV && new URLSearchParams(location.search).has('login')
+  if (!token || previewLogin)
     return (
       <>
         <Login onLogin={(t) => (auth.set(t), setToken(t))} />
