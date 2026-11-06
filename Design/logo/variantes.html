@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TALIS · Logo</title>
+<style>
+  :root { --dark: #262626; --light: #F2EFE9; --sand: #E9E5DC; --line: rgba(38,38,38,.1); }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 system-ui, sans-serif; background: var(--sand); color: var(--dark); padding: 40px 16px; }
+  main { max-width: 1100px; margin: 0 auto; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  h1 { max-width: 1100px; margin: 0 auto 24px; font-size: 22px; }
+  figure { margin: 0; border-radius: 22px; overflow: hidden; border: 1px solid var(--line); background: #fff; }
+  .art { height: 240px; display: grid; place-items: center; padding: 32px; }
+  .art img { max-width: 100%; max-height: 100%; }
+  .dark .art { background: var(--dark); }
+  .light .art { background: var(--light); }
+  figcaption { padding: 12px 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 8px; }
+  figcaption code { color: #737371; font-size: 12px; }
+  .apps { grid-column: 1 / -1; }
+  .apps .art { display: flex; gap: 32px; justify-content: center; align-items: end; height: auto; }
+  .apps .art div { text-align: center; font-size: 12px; color: #737371; }
+</style>
+</head>
+<body>
+<h1>TALIS · variantes da logo</h1>
+<main>
+  <figure class="light"><div class="art"><img src="talis-logo.svg" alt="Logo completa" style="height:170px"></div><figcaption><b>Logo completa</b><code>talis-logo.svg</code></figcaption></figure>
+  <figure class="dark"><div class="art"><img src="talis-logo-branco.svg" alt="Logo completa branca" style="height:170px"></div><figcaption><b>Logo completa · fundo escuro</b><code>talis-logo-branco.svg</code></figcaption></figure>
+  <figure class="light"><div class="art"><img src="talis-icone.svg" alt="Só o ícone" style="height:130px"></div><figcaption><b>Só o ícone</b><code>talis-icone.svg</code></figcaption></figure>
+  <figure class="dark"><div class="art"><img src="talis-icone-branco.svg" alt="Só o ícone branco" style="height:130px"></div><figcaption><b>Só o ícone · fundo escuro</b><code>talis-icone-branco.svg</code></figcaption></figure>
+  <figure class="light"><div class="art"><img src="talis-texto.svg" alt="Só o texto" style="width:240px"></div><figcaption><b>Só o texto</b><code>talis-texto.svg</code></figcaption></figure>
+  <figure class="dark"><div class="art"><img src="talis-texto-branco.svg" alt="Só o texto branco" style="width:240px"></div><figcaption><b>Só o texto · fundo escuro</b><code>talis-texto-branco.svg</code></figcaption></figure>
+  <figure class="light"><div class="art"><img src="talis-horizontal.svg" alt="Horizontal" style="width:280px"></div><figcaption><b>Horizontal</b><code>talis-horizontal.svg</code></figcaption></figure>
+  <figure class="dark"><div class="art"><img src="talis-horizontal-branco.svg" alt="Horizontal branca" style="width:280px"></div><figcaption><b>Horizontal · fundo escuro</b><code>talis-horizontal-branco.svg</code></figcaption></figure>
+  <figure class="light apps">
+    <div class="art">
+      <div><img src="talis-app.svg" alt="Ícone de app" width="160"><br>talis-app.svg</div>
+      <div><img src="talis-app-claro.svg" alt="Ícone de app claro" width="160"><br>talis-app-claro.svg</div>
+      <div><img src="talis-app-maskable.svg" alt="Ícone maskable" width="120" style="border-radius:50%"><br>maskable (Android)</div>
+      <div><img src="talis-app.svg" alt="" width="64"><br>64px</div>
+      <div><img src="talis-app.svg" alt="" width="32"><br>32px</div>
+    </div>
+    <figcaption><b>Ícone de app</b><code>png/talis-app-1024.png · 512 · 192 · apple-touch-icon.png</code></figcaption>
+  </figure>
+</main>
+</body>
+</html>
