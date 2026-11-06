@@ -85,3 +85,8 @@
   .login-form { max-width: none; }
 }
 @media (prefers-reduced-motion: reduce) { .login-dots { transition: none; } }
+
+/* troca suave de cor quando o horário muda */
+.login-bg path, .login-bg stop, .login-bg g { transition: fill 2.5s ease, stop-color 2.5s ease, opacity 2.5s ease; }
+.login-bg .login-sky-body circle { transition: cx 2.5s ease, cy 2.5s ease, fill 2.5s ease; }
+.login.is-noite .login-grain { opacity: .5; }

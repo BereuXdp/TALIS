@@ -16,6 +16,7 @@ export default function Login({ onLogin }) {
   const [show, setShow] = useState(false)
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const isLogin = mode === 'login'
+  const hora = useHora()
 
   async function submit(e) {
     e.preventDefault()
@@ -38,8 +39,8 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="login">
-      <Landscape />
+    <div className={`login is-${periodo(hora)}`}>
+      <Landscape hora={hora} />
       <div className="login-grain" aria-hidden="true" />
 
       <motion.div
@@ -63,7 +64,7 @@ export default function Login({ onLogin }) {
                 transition={{ duration: 0.25 }}
               >
                 <h1>{isLogin ? 'Entrar' : 'Criar conta'}</h1>
-                <p className="login-sub">{isLogin ? 'Continue para acessar seu painel' : 'Seu agente de IA que vende pelo WhatsApp'}</p>
+                <p className="login-sub">{isLogin ? `${saudacao(hora)}! Continue para acessar seu painel` : 'Seu agente de IA que vende pelo WhatsApp'}</p>
               </motion.div>
             </AnimatePresence>
 
@@ -230,18 +231,83 @@ function DotBrain() {
   return <canvas ref={ref} className="login-dots" />
 }
 
-/* ---------- Paisagem: serras em camadas + templo grego numa delas ---------- */
-function Landscape() {
-  const { layers, temple } = useMemo(() => {
+/* ---------- Paisagem que muda com a hora: manhã, tarde e noite ----------
+   As cores não trocam de uma vez: são misturadas aos poucos entre os pontos do dia
+   abaixo, e o sol (de dia) e a lua (à noite) andam pelo céu. Atualiza a cada minuto.
+   Em desenvolvimento, /?login&hora=7 força um horário para revisar. */
+const MANHA = {
+  sky: ['#b8b2a6', '#e6e1d6', '#f4f1ea'],
+  ridges: ['#d9d4ca', '#c4bfb5', '#aaa59b', '#8d887f', '#6f6b64', '#4e4b46', '#2f2d2a'],
+  mist: 0.6, sun: 1, moon: 0, stars: 0, glow: '#fff6e6',
+}
+const TARDE = {
+  sky: ['#8c8c8c', '#d8d8d6', '#bfbfbd'],
+  ridges: ['#c9c9c7', '#adadab', '#8f8f8e', '#6f6f6e', '#4f4f4e', '#323232', '#1d1d1d'],
+  mist: 0.5, sun: 0.75, moon: 0, stars: 0, glow: '#ffffff',
+}
+const NOITE = {
+  sky: ['#040404', '#101010', '#202020'],
+  ridges: ['#2c2c2c', '#252525', '#1e1e1e', '#181818', '#121212', '#0d0d0d', '#080808'],
+  mist: 0.12, sun: 0, moon: 1, stars: 1, glow: '#e9e5dc',
+}
+// pontos do dia (hora → cena); entre eles as cores são misturadas
+const DIA = [
+  [0, NOITE], [4.5, NOITE], [7, MANHA], [11, MANHA], [13, TARDE], [17, TARDE], [19.5, NOITE], [24, NOITE],
+]
+
+const hex = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
+const mixHex = (a, b, t) => '#' + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, '0')).join('')
+const mixNum = (a, b, t) => a + (b - a) * t
+
+function sceneAt(h) {
+  let i = 0
+  while (i < DIA.length - 2 && h >= DIA[i + 1][0]) i++
+  const [h0, A] = DIA[i]
+  const [h1, B] = DIA[i + 1]
+  const t = Math.min(1, Math.max(0, (h - h0) / (h1 - h0 || 1)))
+  const s = t * t * (3 - 2 * t) // suaviza o começo e o fim da transição
+  return {
+    sky: A.sky.map((c, k) => mixHex(c, B.sky[k], s)),
+    ridges: A.ridges.map((c, k) => mixHex(c, B.ridges[k], s)),
+    mist: mixNum(A.mist, B.mist, s),
+    sun: mixNum(A.sun, B.sun, s),
+    moon: mixNum(A.moon, B.moon, s),
+    stars: mixNum(A.stars, B.stars, s),
+    glow: mixHex(A.glow, B.glow, s),
+  }
+}
+
+const periodo = (h) => (h >= 5 && h < 12 ? 'manha' : h >= 12 && h < 18 ? 'tarde' : 'noite')
+const saudacao = (h) => ({ manha: 'Bom dia', tarde: 'Boa tarde', noite: 'Boa noite' })[periodo(h)]
+
+function useHora() {
+  const forced = import.meta.env.DEV ? new URLSearchParams(location.search).get('hora') : null
+  const read = () => {
+    if (forced !== null && forced !== '') return Number(forced)
+    const d = new Date()
+    return d.getHours() + d.getMinutes() / 60
+  }
+  const [h, setH] = useState(read)
+  useEffect(() => {
+    const t = setInterval(() => setH(read()), 60_000)
+    return () => clearInterval(t)
+  }, [])
+  return h
+}
+
+// arco no céu: entra pela esquerda, sobe e desce pela direita
+const arc = (p) => ({ x: -40 + p * 1680, y: 290 - Math.sin(Math.PI * p) * 220 })
+
+function Landscape({ hora }) {
+  const { layers, temple, stars } = useMemo(() => {
     const W = 1600
     const H = 900
-    const tones = ['#c9c9c7', '#adadab', '#8f8f8e', '#6f6f6e', '#4f4f4e', '#323232', '#1d1d1d']
     let seed = 11
     const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
     // serra fractal (deslocamento do ponto médio): picos irregulares, como montanha de verdade
     const ridge = (i) => {
       const N = 256
-      const base = 250 + i * 92
+      const base = 330 + i * 84
       const amp = 230 - i * 18
       const p = new Array(N + 1)
       p[0] = base + (rnd() - 0.5) * amp
@@ -261,52 +327,98 @@ function Landscape() {
       d += ` L${W} ${H} Z`
       return { d, f }
     }
-    const layers = tones.map((c, i) => ({ c, ...ridge(i) }))
+    const layers = Array.from({ length: 7 }, (_, i) => ridge(i))
     // templo no pico mais alto da 3ª serra, à direita do card, onde as serras da frente não cobrem
     const L = layers[2]
     const front = layers.slice(3)
     let tx = 1420
     let best = -Infinity
     for (let x = 1350; x <= 1490; x += 6) {
-      const clear = Math.min(...front.map((l) => l.f(x))) - L.f(x) // folga acima das serras da frente
+      const clear = Math.min(...front.map((l) => l.f(x))) - L.f(x)
       if (clear > 40 && L.f(x) > 60 && -L.f(x) > best) {
         best = -L.f(x)
         tx = x
       }
     }
-    return { layers, temple: { x: tx, y: L.f(tx) + 3 } }
+    // estrelas só no céu (acima da serra do fundo)
+    const stars = []
+    for (let k = 0; k < 140; k++) {
+      const x = rnd() * W
+      const y = rnd() * 480
+      if (y < layers[0].f(x) - 12) stars.push({ x, y, r: 0.6 + rnd() * 1.3, o: 0.35 + rnd() * 0.65 })
+    }
+    return { layers, temple: { x: tx, y: L.f(tx) + 3 }, stars }
   }, [])
+
+  const s = sceneAt(hora)
+  const sunP = (hora - 6) / 12 // 6h → 18h
+  const moonP = (((hora - 18 + 24) % 24) / 12) // 18h → 6h
+  const sun = arc(Math.min(1, Math.max(0, sunP)))
+  const moon = arc(Math.min(1, Math.max(0, moonP)))
+  const sunVis = sunP > -0.02 && sunP < 1.02 ? s.sun : 0
+  const moonVis = moonP >= 0 && moonP <= 1 ? s.moon : 0
+
   return (
     <svg className="login-bg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <defs>
         <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0" stopColor="#8c8c8c" />
-          <stop offset="0.55" stopColor="#d8d8d6" />
-          <stop offset="1" stopColor="#bfbfbd" />
+          <stop offset="0" style={{ stopColor: s.sky[0] }} />
+          <stop offset="0.55" style={{ stopColor: s.sky[1] }} />
+          <stop offset="1" style={{ stopColor: s.sky[2] }} />
         </linearGradient>
         <linearGradient id="mist" x1="0" x2="0" y1="0" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0" />
           <stop offset="1" stopColor="#fff" stopOpacity="0.35" />
         </linearGradient>
+        <radialGradient id="glow">
+          <stop offset="0" style={{ stopColor: s.glow }} stopOpacity="0.9" />
+          <stop offset="0.25" style={{ stopColor: s.glow }} stopOpacity="0.35" />
+          <stop offset="1" style={{ stopColor: s.glow }} stopOpacity="0" />
+        </radialGradient>
       </defs>
+
       <rect width="1600" height="900" fill="url(#sky)" />
+
+      <g className="login-stars" style={{ opacity: s.stars }}>
+        {stars.map((st, k) => (
+          <circle key={k} cx={st.x} cy={st.y} r={st.r} fill="#f2efe9" opacity={st.o} />
+        ))}
+      </g>
+
+      {/* sol: brilho grande e disco */}
+      <g style={{ opacity: sunVis }} className="login-sky-body">
+        <circle cx={sun.x} cy={sun.y} r="260" fill="url(#glow)" />
+        <circle cx={sun.x} cy={sun.y} r="38" fill="#fbfaf6" />
+      </g>
+      {/* lua: disco com sombra (minguante) e brilho suave */}
+      <g style={{ opacity: moonVis }} className="login-sky-body">
+        <circle cx={moon.x} cy={moon.y} r="180" fill="url(#glow)" opacity="0.35" />
+        <mask id="moon-cut">
+          <rect x={moon.x - 40} y={moon.y - 40} width="80" height="80" fill="#fff" />
+          <circle cx={moon.x + 12} cy={moon.y - 6} r="27" fill="#000" />
+        </mask>
+        <circle cx={moon.x} cy={moon.y} r="30" fill="#e9e5dc" mask="url(#moon-cut)" />
+      </g>
+
       {layers.map((l, i) => (
         <g key={i}>
-          <path d={l.d} fill={l.c} />
-          {i < 5 && <path d={l.d} fill="url(#mist)" opacity="0.5" />}
-          {i === 2 && <Temple x={temple.x} y={temple.y} color={layers[2].c} />}
+          <path d={l.d} style={{ fill: s.ridges[i] }} />
+          {i < 5 && <path d={l.d} fill="url(#mist)" style={{ opacity: s.mist }} />}
+          {i === 2 && <Temple x={temple.x} y={temple.y} color={s.ridges[2]} lit={s.moon > 0.5} />}
         </g>
       ))}
     </svg>
   )
 }
 
-function Temple({ x, y, color }) {
+function Temple({ x, y, color, lit }) {
   // pequeno templo dórico: base, 6 colunas, arquitrave e frontão
   const w = 64
   const cols = Array.from({ length: 6 }, (_, i) => x - w / 2 + 4 + i * ((w - 12) / 5))
   return (
-    <g fill={color} opacity="0.95">
+    <g style={{ fill: color }} opacity="0.95">
+      {/* à noite, uma luz fraca entre as colunas */}
+      <rect x={x - w / 2 + 2} y={y - 31} width={w - 4} height="24" fill="#e9c98a" style={{ opacity: lit ? 0.35 : 0, transition: 'opacity 2s' }} />
       <rect x={x - w / 2 - 4} y={y - 4} width={w + 8} height="5" />
       <rect x={x - w / 2 - 2} y={y - 7} width={w + 4} height="3" />
       {cols.map((cx) => (
