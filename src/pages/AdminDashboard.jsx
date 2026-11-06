@@ -70,17 +70,17 @@ export default function AdminDashboard() {
         <Tile icon={Building2} label="Empresas" value={o.total} sub={`${plural(o.active, 'ativa', 'ativas')} · ${o.trial} em teste · ${plural(o.blocked, 'bloqueada', 'bloqueadas')}`}>
           <StackBar
             parts={[
-              { label: 'Ativas', value: o.active, color: '#3A3A3A' },
-              { label: 'Em teste', value: o.trial, color: '#BFBFBD' },
-              { label: 'Bloqueadas', value: o.blocked, color: '#737371' },
+              { label: 'Ativas', value: o.active, color: 'var(--c-mid)' },
+              { label: 'Em teste', value: o.trial, color: 'var(--c-soft)' },
+              { label: 'Bloqueadas', value: o.blocked, color: 'var(--c-total)' },
             ]}
           />
         </Tile>
         <Tile icon={UserPlus} label="Leads novos (30 dias)" value={d.last30.newLeads} sub={`${plural(o.new30, 'empresa nova', 'empresas novas')} no período`}>
-          <Sparkline values={d.days.map((x) => x.total - x.ai)} color="#737371" height={40} />
+          <Sparkline values={d.days.map((x) => x.total - x.ai)} color="var(--c-total)" height={40} />
         </Tile>
         <Tile icon={MessagesSquare} label="Conversas (total)" value={d.conversations} sub={plural(d.users, 'usuário ativo', 'usuários ativos')}>
-          <Sparkline values={d.days.map((x) => x.ai)} color="#3A3A3A" height={40} />
+          <Sparkline values={d.days.map((x) => x.ai)} color="var(--c-mid)" height={40} />
         </Tile>
       </div>
 
@@ -93,11 +93,11 @@ export default function AdminDashboard() {
             </div>
             <div className="legend">
               <span>
-                <i style={{ background: '#737371' }} />
+                <i style={{ background: 'var(--c-total)' }} />
                 Total
               </span>
               <span>
-                <i style={{ background: '#262626' }} />
+                <i style={{ background: 'var(--c-ai)' }} />
                 Pela IA
               </span>
             </div>
@@ -117,8 +117,8 @@ export default function AdminDashboard() {
         <Item className="card stats-col">
           <h2>Operação</h2>
           <Stat ring={d.instances.total ? d.instances.connected / d.instances.total : 0} icon={Smartphone} label="WhatsApp conectados" value={d.instances.connected} sub={`de ${plural(d.instances.total, 'número criado', 'números criados')}`} />
-          <Stat ring={o.total ? d.agentsEnabled / o.total : 0} icon={Bot} label="Agentes ligados" value={d.agentsEnabled} sub={`em ${plural(o.total, 'empresa', 'empresas')}`} color="#3A3A3A" />
-          <Stat ring={aiPct / 100} icon={MessageCircle} label="Respostas da IA" value={d.last30.aiMessages} sub="mensagens em 30 dias" color="#262626" />
+          <Stat ring={o.total ? d.agentsEnabled / o.total : 0} icon={Bot} label="Agentes ligados" value={d.agentsEnabled} sub={`em ${plural(o.total, 'empresa', 'empresas')}`} color="var(--c-mid)" />
+          <Stat ring={aiPct / 100} icon={MessageCircle} label="Respostas da IA" value={d.last30.aiMessages} sub="mensagens em 30 dias" color="var(--c-ai)" />
           <Stat icon={Users} label="Usuários ativos" value={d.users} sub="em todas as empresas" />
         </Item>
       </div>
@@ -172,7 +172,7 @@ function Tile({ icon: Icon, label, value, sub, children }) {
   )
 }
 
-function Stat({ icon: Icon, label, value, sub, ring, color = '#737371', raw }) {
+function Stat({ icon: Icon, label, value, sub, ring, color = 'var(--c-total)', raw }) {
   return (
     <div className="stat">
       <div className="grow">

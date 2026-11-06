@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, LayoutGroup, motion } from 'motion/react'
 import {
-  Bot, Building2, LayoutDashboard, LogOut, Menu as MenuIcon, MessagesSquare, Plug, Smartphone, Users, UserCog, AlertTriangle, Hourglass,
+  Bot, Building2, LayoutDashboard, LogOut, Menu as MenuIcon, MessagesSquare, Moon, Plug, Smartphone, Sun, Users, UserCog, AlertTriangle, Hourglass,
 } from 'lucide-react'
 import { api, auth, ORG_STATUS } from './api.js'
 import { BRAIN, WORD } from './brand.js'
+import { currentTheme, setTheme } from './theme.js'
 import { Alert, Avatar, Dialogs, Toaster, ease } from './components/ui.jsx'
 import Login from './pages/Login.jsx'
 import WhatsApp from './pages/WhatsApp.jsx'
@@ -38,6 +39,7 @@ export default function App() {
   const [me, setMe] = useState(null)
   const [view, setView] = useState(fromPath)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [theme, setThemeState] = useState(currentTheme)
   // Em desenvolvimento, /?login mostra a tela de login mesmo logado (para revisar o visual).
   // Ao entrar por ela, a pré-visualização é desligada e o painel abre normalmente.
   const [previewLogin, setPreviewLogin] = useState(() => import.meta.env.DEV && new URLSearchParams(location.search).has('login'))
@@ -126,6 +128,18 @@ export default function App() {
             <b className="ellipsis">{me?.user.name ?? 'Conta'}</b>
             <span className="ellipsis">{me?.user.email}</span>
           </div>
+          <button
+            className="icon-btn theme-btn"
+            onClick={() => {
+              const next = theme === 'dark' ? 'light' : 'dark'
+              setTheme(next)
+              setThemeState(next)
+            }}
+            aria-label={theme === 'dark' ? 'Usar tema claro' : 'Usar tema escuro'}
+            title={theme === 'dark' ? 'Tema claro' : 'Tema escuro'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
           <button className="icon-btn" onClick={logout} aria-label="Sair" title="Sair">
             <LogOut size={17} />
           </button>

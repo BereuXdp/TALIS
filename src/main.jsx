@@ -5,6 +5,10 @@ import App from './App.jsx'
 import './styles.css'
 import './screens.css'
 import './login.css'
+import './theme.css'
+import { applyTheme } from './theme.js'
+
+applyTheme()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

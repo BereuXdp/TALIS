@@ -1,0 +1,99 @@
+/* ==========================================================
+   Temas: claro (padrão) e escuro
+   O tema fica em <html data-theme="light|dark"> (src/theme.js).
+   ========================================================== */
+:root {
+  /* cores dos gráficos */
+  --c-total: #8C8C8C;
+  --c-ai: #262626;
+  --c-mid: #3A3A3A;
+  --c-soft: #BFBFBD;
+  --sk-shine: #ffffff;
+  --row-hover: rgba(233, 229, 220, 0.28);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f0f0f;
+  --panel: #191919;
+  --surface: #222222;
+  --surface-2: #2a2a2a;
+  --line: rgba(242, 239, 233, 0.08);
+  --line-strong: rgba(242, 239, 233, 0.16);
+  --text: #F2EFE9;
+  --text-2: #A9A7A2;
+  --text-3: #7E7D79;
+  --rose: #A9A7A2;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+
+  --ok: #7fcfa2;   --ok-bg: rgba(47, 122, 85, 0.2);
+  --warn: #e3b86f; --warn-bg: rgba(146, 99, 26, 0.24);
+  --bad: #f08c9c;  --bad-bg: rgba(163, 54, 74, 0.24);
+
+  --c-total: #8C8C8C;
+  --c-ai: #E9E5DC;
+  --c-mid: #BFBFBD;
+  --c-soft: #5c5c5c;
+  --sk-shine: #333333;
+  --row-hover: rgba(255, 255, 255, 0.03);
+
+  /* a grega escura vira clara sobre o fundo escuro */
+  --key-dark: var(--key-light);
+}
+
+/* ---------- ajustes do escuro ---------- */
+:root[data-theme='dark'] .sk { background-image: linear-gradient(90deg, var(--surface-2) 0%, var(--sk-shine) 50%, var(--surface-2) 100%); }
+:root[data-theme='dark'] tbody tr:hover { background: var(--row-hover); }
+
+/* botão principal claro sobre o escuro */
+:root[data-theme='dark'] .btn.primary { background: var(--cream); border-color: var(--cream); color: #121212; }
+@media (hover: hover) and (pointer: fine) {
+  :root[data-theme='dark'] .btn.primary:hover:not(:disabled) { background: #ffffff; border-color: #ffffff; }
+}
+:root[data-theme='dark'] .btn.danger-solid { background: #b4425a; border-color: #b4425a; color: #fff; }
+
+/* menu lateral: item ativo usa o texto do tema */
+:root[data-theme='dark'] .nav-item.active { color: var(--text); }
+:root[data-theme='dark'] .sidebar .meander.light { opacity: .12; }
+
+/* avatares, ícones e destaques que usavam o creme */
+:root[data-theme='dark'] .avatar,
+:root[data-theme='dark'] .connect-icon,
+:root[data-theme='dark'] .instance-icon,
+:root[data-theme='dark'] .kb-icon { background: var(--surface-2); color: var(--text-2); }
+:root[data-theme='dark'] .org-chip .avatar,
+:root[data-theme='dark'] .sidebar-foot .avatar { background: #2e2e2e; color: var(--cream); }
+:root[data-theme='dark'] .instance.on { background: linear-gradient(180deg, var(--surface) 0%, var(--surface) 60%, rgba(47, 122, 85, 0.12) 100%); }
+:root[data-theme='dark'] .chat-item-bg { background: var(--surface-2); }
+:root[data-theme='dark'] .steps li::before { background: var(--cream); color: #121212; }
+:root[data-theme='dark'] .pair-code { color: var(--text); }
+:root[data-theme='dark'] .textarea.prompt:focus { background: var(--surface); }
+
+/* avisos */
+:root[data-theme='dark'] .banner.warn { color: var(--warn); border-color: rgba(227, 184, 111, 0.2); }
+:root[data-theme='dark'] .banner.info { background: var(--surface); color: var(--text-2); border-color: var(--line); }
+:root[data-theme='dark'] .banner.bad { border-color: rgba(240, 140, 156, 0.2); }
+:root[data-theme='dark'] code { background: rgba(255, 255, 255, 0.08); }
+
+/* conversas */
+:root[data-theme='dark'] .wa-bg { background-color: #151515; background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px); }
+:root[data-theme='dark'] .msg.in { background: var(--surface-2); color: var(--text); }
+:root[data-theme='dark'] .msg.out { background: #3a3a3a; color: var(--text); }
+:root[data-theme='dark'] .msg.out.ai { background: var(--cream); color: #121212; }
+
+/* cards escuros ganham um pouco de borda para destacar do painel */
+:root[data-theme='dark'] .card.dark,
+:root[data-theme='dark'] .top-card { border: 1px solid rgba(255, 255, 255, 0.06); }
+:root[data-theme='dark'] .playground { border-color: #000; }
+
+/* QR Code continua sobre branco (precisa de contraste para a câmera ler) */
+:root[data-theme='dark'] .qr-frame { background: #fff; }
+
+/* select: seta mais clara */
+:root[data-theme='dark'] .select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23A9A7A2' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m2 4 4 4 4-4'/%3E%3C/svg%3E"); }
+
+/* botão de tema no rodapé do menu */
+.theme-btn svg { transition: transform 300ms var(--ease-out); }
+.theme-btn:active svg { transform: rotate(-20deg) scale(0.9); }
