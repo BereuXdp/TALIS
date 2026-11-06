@@ -67,8 +67,6 @@
 .login-demo { align-self: center; display: inline-flex; align-items: center; gap: 6px; border: 0; background: none; color: rgba(242,239,233,.55); font-size: 12px; cursor: pointer; }
 .login-demo:hover { color: #fff; }
 
-.login-quote { font-size: 12.5px; color: rgba(242,239,233,.62); display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.login-quote span { font-family: var(--greek); font-weight: 500; font-size: 17px; letter-spacing: .01em; color: rgba(242,239,233,.92); }
 
 /* lado da arte: cérebro em pontilhado dissolvendo no vidro */
 .login-art {

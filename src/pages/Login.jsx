@@ -146,9 +146,6 @@ export default function Login({ onLogin }) {
             )}
           </form>
 
-          <p className="login-quote">
-            <span lang="grc">Γνῶθι σεαυτόν</span> “Conhece-te a ti mesmo”
-          </p>
         </div>
 
         <div className="login-art" aria-hidden="true">

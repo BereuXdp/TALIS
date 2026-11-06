@@ -39,7 +39,7 @@ Troque o conteúdo do frontend atual pelo `dist/`. O servidor precisa mandar tod
 - `src/pages/*`: as telas
 
 Paleta: `#262626` `#8C8C8C` `#BFBFBD` `#E9E5DC` `#F2EFE9`.
-Fontes: Cinzel (títulos, mesma da logo), GFS Didot (frase grega do login) e Inter (texto e números). Ornamentos gregos (meandro e caneluras) em `src/screens.css`, seção "Pegada grega".
+Fontes: Cinzel (títulos, mesma da logo) e Inter (texto e números). Ornamentos gregos (meandro e caneluras) em `src/screens.css`, seção "Pegada grega".
 
 ## Logo
 
