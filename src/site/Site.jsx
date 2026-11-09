@@ -478,9 +478,7 @@ function Final() {
 }
 
 function Temple() {
-  // templo dórico em linhas finas, desenhado pelo próprio scroll
-  const ref = useRef(null)
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'center 0.55'] })
+  // templo dórico em linhas finas, desenhado sozinho quando entra na tela
   const cols = Array.from({ length: 8 }, (_, i) => 70 + i * 66)
   const paths = [
         'M300 18 L560 92 L40 92 Z',
@@ -492,17 +490,12 @@ function Temple() {
         'M6 276 H594 V290 H6 Z',
   ]
   return (
-    <svg className="s-temple" viewBox="0 0 600 300" aria-hidden="true" ref={ref}>
+    <motion.svg className="s-temple" viewBox="0 0 600 300" aria-hidden="true" initial="h" whileInView="v" viewport={{ once: true, margin: '-60px' }}>
       {paths.map((d, i) => (
-        <TemplePath key={i} d={d} p={p} start={(i / paths.length) * 0.5} />
+        <motion.path key={i} d={d} variants={{ h: { pathLength: 0, opacity: 0 }, v: { pathLength: 1, opacity: 1, transition: { duration: 1.4, delay: i * 0.05, ease } } }} />
       ))}
-    </svg>
+    </motion.svg>
   )
-}
-
-function TemplePath({ d, p, start }) {
-  const len = useTransform(p, [start, start + 0.5], [0, 1])
-  return <motion.path d={d} style={{ pathLength: len, opacity: useTransform(p, [start, start + 0.1], [0, 1]) }} />
 }
 
 /* ---------- Rodapé ---------- */
