@@ -204,12 +204,16 @@ function Cine() {
   const ringRot = useTransform(p, [0, 1], [-30, 120])
   const sweep = useTransform(p, [0.05, 0.95], [0, 1])
   const fill = useTransform(p, [0, 1], [0, 1])
+  // a cena só aparece quando já está quase presa no topo: assim o busto do hero (que sai da tela
+  // nessa hora) e o desta cena nunca ficam visíveis juntos
+  const { scrollYProgress: enter } = useScroll({ target: ref, offset: ['start end', 'start start'] })
+  const stageO = useTransform(enter, [0.72, 1], [0, 1])
   const [idx, setIdx] = useState(0)
   useEffect(() => p.on('change', (v) => setIdx(Math.min(CINE.length - 1, Math.max(0, Math.floor((v - 0.04) / 0.31))))), [p])
 
   return (
     <section className="s-cine" ref={ref} aria-label="Como o TALIS atende">
-      <div className="s-cine-stick">
+      <motion.div className="s-cine-stick" style={{ opacity: stageO }}>
         <div className="s-cine-vignette" aria-hidden="true" />
 
         {/* anel de luz que se desenha com o scroll */}
@@ -236,7 +240,7 @@ function Cine() {
           </div>
           <span className="tnum">0{CINE.length}</span>
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }
