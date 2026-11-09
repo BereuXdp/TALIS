@@ -4,6 +4,7 @@ import {
   ArrowRight, ArrowUpRight, BookOpen, Bot, Clock, Hand, LayoutDashboard, MessageCircle, Minus, Plus, QrCode, Smartphone, Users,
 } from 'lucide-react'
 import { BRAIN, WORD } from '../brand.js'
+import { initAnime } from './anime.js'
 
 // Endereço do painel (login). Em produção, defina VITE_APP_URL (ex.: https://app.talis.com.br).
 const APP = import.meta.env.VITE_APP_URL || '/'
@@ -18,6 +19,8 @@ const reveal = {
 
 export default function Site() {
   const { scrollYProgress } = useScroll()
+  // Anime.js: títulos palavra por palavra, cards em cascata e zoom guiado pelo scroll
+  useEffect(() => initAnime(), [])
   return (
     <>
       {/* barra de progresso da leitura no topo */}
@@ -132,9 +135,9 @@ function Hero() {
         <motion.span className="s-eyebrow" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease, delay: 0.1 }}>
           Agente de IA para WhatsApp
         </motion.span>
-        <motion.h1 initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease, delay: 0.2 }}>
+        <h1 data-hero-title>
           A sabedoria de um bom vendedor, <em>no seu WhatsApp.</em>
-        </motion.h1>
+        </h1>
         <motion.p initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease, delay: 0.32 }}>
           O TALIS atende seus clientes a qualquer hora, responde com o que você cadastrou e chama sua equipe quando a venda precisa de uma pessoa.
         </motion.p>
@@ -197,7 +200,7 @@ function Steps() {
         <div className="s-steps-inner">
           <header className="s-head">
             <span className="s-eyebrow">Como funciona</span>
-            <h2>Três passos, como numa boa aula de lógica.</h2>
+            <h2 data-split>Três passos, como numa boa aula de lógica.</h2>
             <div className="s-steps-track" aria-hidden="true">
               <motion.div className="s-steps-fill" style={{ scaleX: line }} />
             </div>
@@ -235,7 +238,7 @@ function Study() {
       </motion.div>
       <motion.div className="s-study-copy" {...reveal}>
         <span className="s-eyebrow">Base de conhecimento</span>
-        <h2>Ele estuda o seu negócio antes de falar.</h2>
+        <h2 data-split>Ele estuda o seu negócio antes de falar.</h2>
         <p>
           Preços, estoque, entrega, trocas: tudo o que o agente diz vem da base que você mantém. Nada de inventar desconto ou prometer prazo que não existe.
         </p>
@@ -272,7 +275,7 @@ function Demo() {
     <section className="s-section s-demo">
       <motion.div className="s-demo-copy" {...reveal} onViewportEnter={() => setPlay(true)}>
         <span className="s-eyebrow">Na prática</span>
-        <h2>Conversa de gente, não de robô.</h2>
+        <h2 data-split>Conversa de gente, não de robô.</h2>
         <p>Mensagens curtas, uma pergunta por vez e o nome do cliente quando ele diz. E quando o assunto foge do que o agente sabe, ele avisa sua equipe e pausa.</p>
         <a href={`${APP}?cadastro`} className="s-btn">
           Testar no meu negócio <ArrowRight size={16} />
@@ -324,17 +327,17 @@ function Features() {
     <section className="s-section" id="recursos">
       <motion.header className="s-head" {...reveal}>
         <span className="s-eyebrow">Recursos</span>
-        <h2>O essencial para vender, sem complicação.</h2>
+        <h2 data-split>O essencial para vender, sem complicação.</h2>
       </motion.header>
       <div className="s-features">
         {FEATURES.map((f, i) => (
-          <motion.article key={f.title} className="s-feature" {...reveal} transition={{ ...reveal.transition, delay: (i % 3) * 0.07 }}>
+          <article key={f.title} className="s-feature">
             <span className="s-feature-ic">
               <f.icon size={20} />
             </span>
             <h3>{f.title}</h3>
             <p>{f.text}</p>
-          </motion.article>
+          </article>
         ))}
       </div>
     </section>
@@ -356,7 +359,7 @@ function Name() {
         <motion.span className="s-eyebrow" {...reveal}>
           Por que TALIS
         </motion.span>
-        <motion.h2 {...reveal}>Um nome que vem de Tales de Mileto.</motion.h2>
+        <h2 data-split>Um nome que vem de Tales de Mileto.</h2>
         <p className="s-words" aria-label={NAME_TEXT}>
           {words.map((w, i) => (
             <Word key={i} p={p} range={[i / words.length, (i + 1) / words.length]}>
@@ -415,7 +418,7 @@ function Pricing() {
       <motion.div className="s-pricing-glow" style={{ opacity: glow }} aria-hidden="true" />
       <motion.header className="s-head center" {...reveal}>
         <span className="s-eyebrow">Preço</span>
-        <h2>Um plano. Tudo incluído.</h2>
+        <h2 data-split>Um plano. Tudo incluído.</h2>
         <p className="s-head-sub">Sem módulos extras e sem cobrança por mensagem. Você paga um valor por mês e usa tudo.</p>
       </motion.header>
 
@@ -457,7 +460,7 @@ function Pricing() {
 
       <div className="s-includes">
         {GROUPS.map((g, i) => (
-          <motion.article key={g.title} className="s-include" {...reveal} transition={{ ...reveal.transition, delay: i * 0.09 }}>
+          <article key={g.title} className="s-include">
             <span className="s-include-ic">
               <g.icon size={20} />
             </span>
@@ -467,7 +470,7 @@ function Pricing() {
                 <li key={t}>{t}</li>
               ))}
             </ul>
-          </motion.article>
+          </article>
         ))}
       </div>
     </section>
@@ -520,11 +523,11 @@ function Faq() {
     <section className="s-section s-faq" id="perguntas">
       <motion.header className="s-head" {...reveal}>
         <span className="s-eyebrow">Perguntas</span>
-        <h2>Dúvidas frequentes</h2>
+        <h2 data-split>Dúvidas frequentes</h2>
       </motion.header>
       <div className="s-faq-list">
         {FAQ.map(([q, a], i) => (
-          <motion.div key={q} className={`s-faq-item ${open === i ? 'open' : ''}`} {...reveal}>
+          <div key={q} className={`s-faq-item ${open === i ? 'open' : ''}`}>
             <button onClick={() => setOpen(open === i ? -1 : i)} aria-expanded={open === i}>
               <span>{q}</span>
               {open === i ? <Minus size={18} /> : <Plus size={18} />}
@@ -536,7 +539,7 @@ function Faq() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>
@@ -549,7 +552,7 @@ function Final() {
     <section className="s-final">
       <Temple />
       <motion.div className="s-final-copy" {...reveal}>
-        <h2>Coloque um vendedor que nunca dorme no seu WhatsApp.</h2>
+        <h2 data-split>Coloque um vendedor que nunca dorme no seu WhatsApp.</h2>
         <p>Crie sua conta, conecte o número e ensine o agente. Em poucos minutos ele começa a atender.</p>
         <div className="s-hero-cta center">
           <a href={`${APP}?cadastro`} className="s-btn">
