@@ -158,25 +158,18 @@ function Hero() {
 /* ---------- Friso: faixa com grega e palavras ---------- */
 const FRIEZE = ['Atende 24 horas', 'Responde com a sua base', 'Passa para o vendedor', 'Vários números', 'Painel com conversas', 'Teste antes de ligar']
 function Frieze() {
-  // duas faixas que andam em sentidos opostos conforme o scroll
-  const ref = useRef(null)
-  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const x1 = useTransform(p, [0, 1], ['0%', '-30%'])
-  const x2 = useTransform(p, [0, 1], ['-30%', '0%'])
-  const row = (x, alt) => (
-    <motion.div className={`s-marquee-track ${alt ? 'alt' : ''}`} style={{ x }}>
-      {[...FRIEZE, ...FRIEZE, ...FRIEZE].map((t, i) => (
-        <span key={i}>
-          {t} <i>✦</i>
-        </span>
-      ))}
-    </motion.div>
-  )
   return (
-    <div className="s-frieze" aria-hidden="true" ref={ref}>
+    <div className="s-frieze" aria-hidden="true">
       <div className="s-key" />
-      <div className="s-marquee">{row(x1)}</div>
-      <div className="s-marquee">{row(x2, true)}</div>
+      <div className="s-marquee">
+        <div className="s-marquee-track s-auto">
+          {[...FRIEZE, ...FRIEZE].map((t, i) => (
+            <span key={i}>
+              {t} <i>✦</i>
+            </span>
+          ))}
+        </div>
+      </div>
       <div className="s-key" />
     </div>
   )
