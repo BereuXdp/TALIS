@@ -228,9 +228,9 @@ function Cine() {
         ))}
 
         <motion.div className="s-cine-bust" style={{ x: bustX, scale: bustScale, y: bustY }} aria-hidden="true">
-          <img src="/site/busto-hero.webp" alt="" />
+          <img src="/site/cine-estatua.webp" alt="" />
           {/* reflexo de luz que atravessa a escultura (clareia só onde há pedra) */}
-          <motion.img className="s-cine-sheen" src="/site/busto-hero.webp" alt="" style={{ '--sweep': sweep }} />
+          <motion.img className="s-cine-sheen" src="/site/cine-estatua.webp" alt="" style={{ '--sweep': sweep }} />
         </motion.div>
 
         <div className="s-cine-hud" aria-hidden="true">
