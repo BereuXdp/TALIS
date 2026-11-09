@@ -414,9 +414,9 @@ function Landscape({ hora, clima }) {
         <g key={i}>
           <path d={l.d} style={{ fill: s.ridges[i] }} />
           {i < 5 && <path d={l.d} fill="url(#mist)" style={{ opacity: s.mist }} />}
-          {i === 2 && <Temple x={temple.x} y={temple.y} color={s.ridges[2]} lit={s.moon > 0.5} />}
+          {i === 2 && <Temple x={temple.x} y={temple.y} color={s.ridges[2]} lit={s.moon > 0.5} owl={s.moon > 0.5} />}
           {/* pássaros voam entre a serra do fundo e a seguinte */}
-          {i === 0 && s.birds && <Birds night={s.moon > 0.5} />}
+          {i === 0 && s.birds && (s.moon > 0.5 ? <Bats /> : <Birds night={false} />)}
         </g>
       ))}
     </svg>
@@ -709,7 +709,7 @@ function Birds({ night }) {
   )
 }
 
-function Temple({ x, y, color, lit }) {
+function Temple({ x, y, color, lit, owl }) {
   // pequeno templo dórico: base, 6 colunas, arquitrave e frontão
   const w = 64
   const cols = Array.from({ length: 6 }, (_, i) => x - w / 2 + 4 + i * ((w - 12) / 5))
@@ -724,6 +724,74 @@ function Temple({ x, y, color, lit }) {
       ))}
       <rect x={x - w / 2 - 2} y={y - 36} width={w + 4} height="5" />
       <path d={`M${x - w / 2 - 4} ${y - 36} L${x} ${y - 50} L${x + w / 2 + 4} ${y - 36} Z`} />
+      {owl && <Owl x={x} y={y - 50} />}
+    </g>
+  )
+}
+
+/* ---------- Animais da noite ----------
+   Morcegos: voo em zigue-zague pelo céu, batendo as asas rápido.
+   Coruja de Atena (símbolo da sabedoria): pousada no alto do templo, olhos acesos que piscam. */
+const BAT_UP = 'M0 0 C-3 -2 -6 -9 -14 -10 C-11 -6 -11 -3 -12 0 C-8 -2 -5 -1 -3 1 C-1 3 1 3 3 1 C5 -1 8 -2 12 0 C11 -3 11 -6 14 -10 C6 -9 3 -2 0 0 Z'
+const BAT_DOWN = 'M0 0 C-3 1 -7 5 -13 9 C-10 5 -9 3 -10 1 C-7 1 -5 1 -3 1 C-1 3 1 3 3 1 C5 1 7 1 10 1 C9 3 10 5 13 9 C7 5 3 1 0 0 Z'
+
+function Bats() {
+  const bats = useMemo(() => {
+    let seed = 41
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+    return Array.from({ length: 6 }, (_, k) => {
+      // caminho em zigue-zague da esquerda para a direita (ou ao contrário), alto no céu
+      const ltr = k % 2 === 0
+      const pts = []
+      const n = 9
+      for (let j = 0; j <= n; j++) {
+        const x = ltr ? -80 + (j / n) * 1760 : 1680 - (j / n) * 1760
+        const y = 70 + rnd() * 230
+        pts.push([x, y])
+      }
+      let d = `M${pts[0][0]} ${pts[0][1]}`
+      for (let j = 1; j < pts.length; j++) {
+        const [x0, y0] = pts[j - 1]
+        const [x1, y1] = pts[j]
+        const cx = (x0 + x1) / 2
+        d += ` Q${cx} ${Math.min(y0, y1) - 40 - rnd() * 60} ${x1} ${y1}`
+      }
+      return {
+        d,
+        dur: 16 + rnd() * 14,
+        begin: -rnd() * 30,
+        flap: 0.16 + rnd() * 0.08,
+        s: 1.3 + rnd() * 0.7,
+      }
+    })
+  }, [])
+  return (
+    <g className="bats" fill="#1e1e1e" stroke="rgba(233,229,220,.45)" strokeWidth="0.7">
+      {bats.map((b, k) => (
+        <g key={k}>
+          <animateMotion path={b.d} dur={`${b.dur}s`} begin={`${b.begin}s`} repeatCount="indefinite" />
+          <g transform={`scale(${b.s})`}>
+            <path d={BAT_UP}>
+              <animate attributeName="d" values={`${BAT_UP};${BAT_DOWN};${BAT_UP}`} dur={`${b.flap}s`} begin={`${b.begin}s`} repeatCount="indefinite" />
+            </path>
+          </g>
+        </g>
+      ))}
+    </g>
+  )
+}
+
+function Owl({ x, y }) {
+  // ~12 de largura: corpo, tufos das orelhas, olhos que brilham e piscam de vez em quando
+  return (
+    <g className="owl" transform={`translate(${x} ${y}) scale(1.7)`}>
+      <path d="M-6 -1 C-7 -8 -6 -14 -5 -17 L-3.5 -14 C-1.5 -15 1.5 -15 3.5 -14 L5 -17 C6 -14 7 -8 6 -1 C4 1 -4 1 -6 -1 Z" fill="#0f0f0f" />
+      <g className="owl-eyes">
+        <circle cx="-2.4" cy="-10" r="1.5" fill="#e9c98a" />
+        <circle cx="2.4" cy="-10" r="1.5" fill="#e9c98a" />
+      </g>
+      <circle cx="-2.4" cy="-10" r="4" fill="#e9c98a" opacity="0.12" />
+      <circle cx="2.4" cy="-10" r="4" fill="#e9c98a" opacity="0.12" />
     </g>
   )
 }

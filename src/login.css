@@ -108,3 +108,8 @@
 .login-flash.on { opacity: 1; }
 .login.clima-chuva .login-card, .login.clima-tempestade .login-card { background: linear-gradient(135deg, rgba(40, 42, 46, .62), rgba(20, 21, 24, .55)); }
 @media (prefers-reduced-motion: reduce) { .login-cloud { animation: none; } }
+
+/* coruja: olhos piscam a cada ~6 s */
+.owl-eyes { transform-box: fill-box; transform-origin: center; animation: owl-blink 6s ease-in-out infinite; }
+@keyframes owl-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@media (prefers-reduced-motion: reduce) { .bats { display: none; } .owl-eyes { animation: none; } }
