@@ -261,7 +261,9 @@ function Demo() {
   const [play, setPlay] = useState(false)
   useEffect(() => {
     if (!play) return
-    const t = setInterval(() => setN((v) => (v >= CHAT.length + 3 ? 0 : v + 1)), 1600)
+    // primeira mensagem já aparece; as próximas a cada ~0,9 s; pausa no fim e recomeça
+    setN((v) => Math.max(v, 1))
+    const t = setInterval(() => setN((v) => (v >= CHAT.length + 4 ? 1 : v + 1)), 900)
     return () => clearInterval(t)
   }, [play])
   return (
