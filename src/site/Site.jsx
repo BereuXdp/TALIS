@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
 import {
   ArrowRight, ArrowUpRight, BookOpen, Bot, Clock, Hand, LayoutDashboard, MessageCircle, Minus, Plus, QrCode, Smartphone, Users,
@@ -17,8 +17,11 @@ const reveal = {
 }
 
 export default function Site() {
+  const { scrollYProgress } = useScroll()
   return (
     <>
+      {/* barra de progresso da leitura no topo */}
+      <motion.div className="s-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
       <Nav />
       <main>
         <Hero />
@@ -28,6 +31,7 @@ export default function Site() {
         <Demo />
         <Features />
         <Name />
+        <Pricing />
         <Faq />
         <Final />
       </main>
@@ -69,6 +73,7 @@ function Nav() {
       <nav className="s-nav-links" aria-label="Seções">
         <a href="#como-funciona">Como funciona</a>
         <a href="#recursos">Recursos</a>
+        <a href="#preco">Preço</a>
         <a href="#perguntas">Perguntas</a>
       </nav>
       <div className="s-nav-cta">
@@ -85,32 +90,43 @@ function Nav() {
 
 /* ---------- Hero: TALIS gigante atrás do busto 3D ---------- */
 function Hero() {
-  const { scrollY } = useScroll()
-  const wordY = useTransform(scrollY, [0, 600], [0, 120])
-  const bustY = useTransform(scrollY, [0, 600], [0, -60])
+  const ref = useRef(null)
+  // progresso do scroll enquanto o hero sai da tela (0 → 1)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const wordY = useTransform(p, [0, 1], [0, 220])
+  const wordO = useTransform(p, [0, 0.8], [1, 0])
+  const bustY = useTransform(p, [0, 1], [0, -90])
+  const bustS = useTransform(p, [0, 1], [1, 1.18])
+  const bustO = useTransform(p, [0.4, 1], [1, 0])
+  const haloR = useTransform(p, [0, 1], [0, 60])
+  const copyY = useTransform(p, [0, 1], [0, -60])
+  const copyO = useTransform(p, [0, 0.6], [1, 0])
 
   return (
-    <section className="s-hero" id="topo">
+    <section className="s-hero" id="topo" ref={ref}>
       <div className="s-hero-beam" aria-hidden="true" />
-      <motion.div className="s-hero-word" aria-hidden="true" style={{ y: wordY }}>
+      <motion.div className="s-hero-word" aria-hidden="true" style={{ y: wordY, opacity: wordO }}>
         <svg viewBox={`0 0 ${WORD.w} ${WORD.h}`}>
           <path d={WORD.d} />
         </svg>
       </motion.div>
 
-      <motion.div className="s-hero-bust" style={{ y: bustY }} aria-hidden="true">
-        <div className="s-halo on" />
-        <motion.img
-          src="/site/busto.webp"
-          alt=""
-          className="s-bust-img"
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.6, ease }}
-        />
+      <motion.div className="s-hero-bust" style={{ y: bustY, scale: bustS, opacity: bustO }} aria-hidden="true">
+        <motion.div className="s-halo on" style={{ rotate: haloR }} />
+        {/* a imagem fica num quadro do tamanho exato dela; a máscara funde as bordas no fundo */}
+        <div className="s-bust-frame">
+          <motion.img
+            src="/site/busto.webp"
+            alt=""
+            className="s-bust-img"
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.6, ease }}
+          />
+        </div>
       </motion.div>
 
-      <div className="s-hero-copy">
+      <motion.div className="s-hero-copy" style={{ y: copyY, opacity: copyO }}>
         <motion.span className="s-eyebrow" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease, delay: 0.1 }}>
           Agente de IA para WhatsApp
         </motion.span>
@@ -128,7 +144,7 @@ function Hero() {
             Ver como funciona
           </a>
         </motion.div>
-      </div>
+      </motion.div>
 
       <div className="s-hero-meta" aria-hidden="true">
         <span>Mileto · séc. VI a.C.</span>
@@ -142,18 +158,25 @@ function Hero() {
 /* ---------- Friso: faixa com grega e palavras ---------- */
 const FRIEZE = ['Atende 24 horas', 'Responde com a sua base', 'Passa para o vendedor', 'Vários números', 'Painel com conversas', 'Teste antes de ligar']
 function Frieze() {
+  // duas faixas que andam em sentidos opostos conforme o scroll
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const x1 = useTransform(p, [0, 1], ['0%', '-30%'])
+  const x2 = useTransform(p, [0, 1], ['-30%', '0%'])
+  const row = (x, alt) => (
+    <motion.div className={`s-marquee-track ${alt ? 'alt' : ''}`} style={{ x }}>
+      {[...FRIEZE, ...FRIEZE, ...FRIEZE].map((t, i) => (
+        <span key={i}>
+          {t} <i>✦</i>
+        </span>
+      ))}
+    </motion.div>
+  )
   return (
-    <div className="s-frieze" aria-hidden="true">
+    <div className="s-frieze" aria-hidden="true" ref={ref}>
       <div className="s-key" />
-      <div className="s-marquee">
-        <div className="s-marquee-track">
-          {[...FRIEZE, ...FRIEZE].map((t, i) => (
-            <span key={i}>
-              {t} <i>✦</i>
-            </span>
-          ))}
-        </div>
-      </div>
+      <div className="s-marquee">{row(x1)}</div>
+      <div className="s-marquee">{row(x2, true)}</div>
       <div className="s-key" />
     </div>
   )
@@ -165,22 +188,36 @@ const STEPS = [
   { n: 'II', icon: BookOpen, title: 'Ensine o seu negócio', text: 'Cadastre produtos, preços, formas de pagamento, prazos e dúvidas frequentes. O agente só responde com o que estiver ali.' },
   { n: 'III', icon: MessageCircle, title: 'Ele vende por você', text: 'O agente conversa, tira dúvidas e conduz até o pedido. Quando precisa de uma pessoa, passa a conversa para a sua equipe.' },
 ]
+/* Seção fixa na tela enquanto você rola: os passos acendem um por vez e a linha
+   de progresso enche. No celular vira lista normal com entrada suave. */
 function Steps() {
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  const line = useTransform(p, [0.05, 0.9], [0, 1])
+  const [active, setActive] = useState(0)
+  useEffect(() => p.on('change', (v) => setActive(Math.min(STEPS.length - 1, Math.max(0, Math.floor((v - 0.05) / 0.3))))), [p])
   return (
-    <section className="s-section" id="como-funciona">
-      <motion.header className="s-head" {...reveal}>
-        <span className="s-eyebrow">Como funciona</span>
-        <h2>Três passos, como numa boa aula de lógica.</h2>
-      </motion.header>
-      <div className="s-steps">
-        {STEPS.map((s, i) => (
-          <motion.article key={s.n} className="s-step" {...reveal} transition={{ ...reveal.transition, delay: i * 0.08 }}>
-            <span className="s-step-n">{s.n}</span>
-            <s.icon size={22} className="s-step-ic" />
-            <h3>{s.title}</h3>
-            <p>{s.text}</p>
-          </motion.article>
-        ))}
+    <section className="s-steps-pin" id="como-funciona" ref={ref}>
+      <div className="s-steps-sticky">
+        <div className="s-steps-inner">
+          <header className="s-head">
+            <span className="s-eyebrow">Como funciona</span>
+            <h2>Três passos, como numa boa aula de lógica.</h2>
+            <div className="s-steps-track" aria-hidden="true">
+              <motion.div className="s-steps-fill" style={{ scaleX: line }} />
+            </div>
+          </header>
+          <div className="s-steps">
+            {STEPS.map((s, i) => (
+              <article key={s.n} className={`s-step ${i <= active ? 'on' : ''}`}>
+                <span className="s-step-n">{s.n}</span>
+                <s.icon size={22} className="s-step-ic" />
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -188,13 +225,18 @@ function Steps() {
 
 /* ---------- Estudo: imagem do filósofo lendo ---------- */
 function Study() {
+  // a foto se revela de baixo para cima e desliza mais devagar que o texto (parallax)
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'end start'] })
+  const imgY = useTransform(p, [0, 1], ['-8%', '8%'])
+  const clip = useTransform(p, [0.05, 0.4], ['inset(18% 0% 18% 30%)', 'inset(0% 0% 0% 0%)'])
   return (
-    <section className="s-study">
-      <motion.div className="s-study-img" initial={{ opacity: 0, scale: 1.04 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-100px' }} transition={{ duration: 1.2, ease }}>
-        <picture>
+    <section className="s-study" ref={ref}>
+      <motion.div className="s-study-img" style={{ clipPath: clip }}>
+        <motion.picture style={{ y: imgY }}>
           <source media="(max-width: 700px)" srcSet="/site/leitor-900.webp" />
           <img src="/site/leitor.webp" alt="Estátua de filósofo grego de óculos lendo um livro" loading="lazy" />
-        </picture>
+        </motion.picture>
       </motion.div>
       <motion.div className="s-study-copy" {...reveal}>
         <span className="s-eyebrow">Base de conhecimento</span>
@@ -303,15 +345,80 @@ function Features() {
 }
 
 /* ---------- Por que TALIS: o busto no feixe de luz ---------- */
+const NAME_TEXT =
+  'Tales é lembrado como o primeiro filósofo do Ocidente: trocou explicações inventadas por observação. O TALIS segue a mesma ideia nas suas vendas, respondendo com fatos do seu negócio e não com suposições.'
+
 function Name() {
+  // as palavras acendem uma a uma conforme a seção atravessa a tela
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start 0.8', 'end 0.45'] })
+  const words = NAME_TEXT.split(' ')
   return (
-    <section className="s-name">
-      <motion.div className="s-name-copy" {...reveal}>
-        <span className="s-eyebrow">Por que TALIS</span>
-        <h2>Um nome que vem de Tales de Mileto.</h2>
-        <p>
-          Tales é lembrado como o primeiro filósofo do Ocidente: trocou explicações inventadas por observação. O TALIS segue a mesma ideia nas suas vendas, respondendo com fatos do seu negócio e não com suposições.
+    <section className="s-name" ref={ref}>
+      <div className="s-name-copy">
+        <motion.span className="s-eyebrow" {...reveal}>
+          Por que TALIS
+        </motion.span>
+        <motion.h2 {...reveal}>Um nome que vem de Tales de Mileto.</motion.h2>
+        <p className="s-words" aria-label={NAME_TEXT}>
+          {words.map((w, i) => (
+            <Word key={i} p={p} range={[i / words.length, (i + 1) / words.length]}>
+              {w}
+            </Word>
+          ))}
         </p>
+      </div>
+    </section>
+  )
+}
+
+function Word({ p, range, children }) {
+  const o = useTransform(p, range, [0.15, 1])
+  return (
+    <motion.span style={{ opacity: o }} aria-hidden="true">
+      {children}{' '}
+    </motion.span>
+  )
+}
+
+/* ---------- Preço ---------- */
+const INCLUDES = [
+  'Agente de IA atendendo no WhatsApp 24 horas',
+  'Base de conhecimento com seus produtos, preços e regras',
+  'Painel de conversas com “assumir” e “devolver ao agente”',
+  'Vários números de WhatsApp conectados',
+  'Equipe com papéis: dono, gestor, vendedor e auditor',
+  'Área de teste do agente antes de ligar',
+]
+function Pricing() {
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'center center'] })
+  const scale = useTransform(p, [0, 1], [0.9, 1])
+  const rot = useTransform(p, [0, 1], [6, 0])
+  return (
+    <section className="s-section s-pricing" id="preco" ref={ref}>
+      <motion.header className="s-head center" {...reveal}>
+        <span className="s-eyebrow">Preço</span>
+        <h2>Um plano. Tudo incluído.</h2>
+      </motion.header>
+      <motion.div className="s-price-card" style={{ scale, rotateX: rot }}>
+        <div className="s-price-top">
+          <span className="s-price-name">TALIS</span>
+          <div className="s-price-value">
+            <span className="s-price-cur">R$</span>
+            <span className="s-price-num">2.497</span>
+            <span className="s-price-per">/mês</span>
+          </div>
+          <p>Para empresas que vendem pelo WhatsApp e querem atendimento sem fila.</p>
+        </div>
+        <ul className="s-price-list">
+          {INCLUDES.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+        <a href={`${APP}?cadastro`} className="s-btn block">
+          Começar agora <ArrowRight size={16} />
+        </a>
       </motion.div>
     </section>
   )
@@ -376,11 +483,11 @@ function Final() {
 }
 
 function Temple() {
-  // templo dórico em linhas finas, desenhado conforme entra na tela
+  // templo dórico em linhas finas, desenhado pelo próprio scroll
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'center 0.55'] })
   const cols = Array.from({ length: 8 }, (_, i) => 70 + i * 66)
-  return (
-    <motion.svg className="s-temple" viewBox="0 0 600 300" aria-hidden="true" initial="h" whileInView="v" viewport={{ once: true, margin: '-60px' }}>
-      {[
+  const paths = [
         'M300 18 L560 92 L40 92 Z',
         'M30 92 H570 V108 H30 Z',
         'M40 108 H560 V120 H40 Z',
@@ -388,11 +495,19 @@ function Temple() {
         'M30 250 H570 V262 H30 Z',
         'M18 262 H582 V276 H18 Z',
         'M6 276 H594 V290 H6 Z',
-      ].map((d, i) => (
-        <motion.path key={i} d={d} variants={{ h: { pathLength: 0, opacity: 0 }, v: { pathLength: 1, opacity: 1, transition: { duration: 1.4, delay: i * 0.05, ease } } }} />
+  ]
+  return (
+    <svg className="s-temple" viewBox="0 0 600 300" aria-hidden="true" ref={ref}>
+      {paths.map((d, i) => (
+        <TemplePath key={i} d={d} p={p} start={(i / paths.length) * 0.5} />
       ))}
-    </motion.svg>
+    </svg>
   )
+}
+
+function TemplePath({ d, p, start }) {
+  const len = useTransform(p, [start, start + 0.5], [0, 1])
+  return <motion.path d={d} style={{ pathLength: len, opacity: useTransform(p, [start, start + 0.1], [0, 1]) }} />
 }
 
 /* ---------- Rodapé ---------- */
