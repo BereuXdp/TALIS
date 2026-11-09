@@ -263,9 +263,6 @@ a { color: inherit; text-decoration: none; }
 .s-price-num { font: 500 clamp(56px, 8vw, 84px)/1 var(--display); letter-spacing: -0.01em; }
 .s-price-per { font-size: 16px; color: var(--text-2); }
 .s-price-top p { color: var(--text-2); }
-.s-price-list { list-style: none; margin: 0; padding: 22px 0 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 12px; }
-.s-price-list li { display: flex; gap: 12px; align-items: baseline; font-size: 15px; }
-.s-price-list li::before { content: '✦'; color: var(--warm); font-size: 11px; flex: none; }
 .s-btn.block { width: 100%; justify-content: center; }
 
 @media (max-width: 1000px) {
@@ -282,3 +279,50 @@ a { color: inherit; text-decoration: none; }
 .s-marquee-track.s-auto { animation: marquee 40s linear infinite; }
 .s-frieze { gap: 14px; }
 @media (prefers-reduced-motion: reduce) { .s-marquee-track.s-auto { animation: none; } }
+
+/* ---------- preço: versão completa ---------- */
+.s-pricing { position: relative; max-width: 1240px; }
+.s-pricing-glow { position: absolute; left: 50%; top: 22%; width: 900px; height: 700px; translate: -50% 0; background: radial-gradient(closest-side, rgba(233, 201, 138, 0.14), transparent); pointer-events: none; z-index: 0; }
+.s-pricing > * { position: relative; z-index: 1; }
+.s-pricing > .s-pricing-glow { position: absolute; z-index: 0; }
+.s-head-sub { color: var(--text-2); font-size: 17px; max-width: 52ch; }
+.s-pricing-grid { display: grid; grid-template-columns: 1fr minmax(0, 520px) 1fr; gap: clamp(16px, 3vw, 48px); align-items: stretch; margin-bottom: clamp(40px, 5vw, 64px); }
+.s-price-card { max-width: none; margin: 0; width: 100%; }
+.s-price-badge { display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; padding: 6px 14px 6px 8px; border-radius: 99px; border: 1px solid var(--line-2); font: 600 12px var(--display); letter-spacing: 0.18em; text-transform: uppercase; color: var(--warm); }
+.s-price-badge svg { height: 18px; width: auto; }
+.s-price-steps { list-style: none; margin: 0; padding: 22px 0 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.s-price-steps li { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-2); }
+.s-price-steps b { font: 500 22px var(--display); color: transparent; -webkit-text-stroke: 1px rgba(233, 201, 138, 0.7); }
+.s-price-note { font-size: 12.5px; color: var(--text-3); margin-top: -10px; }
+
+/* colunas gregas ao lado do cartão */
+.s-column { position: relative; border-radius: 6px 6px 0 0; min-height: 260px; margin-top: 28px;
+  background:
+    linear-gradient(180deg, rgba(242, 239, 233, 0.22), rgba(242, 239, 233, 0.04)) top / 100% 14px no-repeat,
+    repeating-linear-gradient(90deg, rgba(242, 239, 233, 0.07) 0 3px, transparent 3px 14px),
+    linear-gradient(180deg, rgba(242, 239, 233, 0.09), rgba(242, 239, 233, 0.015));
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 100%); mask-image: linear-gradient(180deg, #000 55%, transparent 100%);
+  border: 1px solid var(--line); border-bottom: 0; }
+.s-column::before { content: ''; position: absolute; left: -10px; right: -10px; top: -14px; height: 14px; border-radius: 4px; background: rgba(242, 239, 233, 0.12); border: 1px solid var(--line); }
+.s-column-l { margin-right: clamp(0px, 3vw, 40px); }
+.s-column-r { margin-left: clamp(0px, 3vw, 40px); }
+
+/* o que está incluso, em três blocos */
+.s-includes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.s-include { padding: 30px 28px; border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(180deg, var(--card), transparent); display: flex; flex-direction: column; gap: 14px; }
+.s-include-ic { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; border: 1px solid var(--line-2); color: var(--warm); }
+.s-include h3 { font-size: 21px; }
+.s-include ul { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.s-include li { display: flex; gap: 12px; align-items: baseline; color: var(--text-2); font-size: 15px; line-height: 1.5; }
+.s-include li::before { content: '✦'; color: var(--warm); font-size: 10px; flex: none; translate: 0 -1px; }
+
+@media (max-width: 1000px) {
+  .s-pricing-grid { grid-template-columns: 1fr; }
+  .s-column { display: none; }
+  .s-price-card { max-width: 560px; margin-inline: auto; }
+  .s-includes { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .s-price-steps { grid-template-columns: 1fr; }
+  .s-price-steps li { flex-direction: row; align-items: baseline; gap: 12px; }
+}

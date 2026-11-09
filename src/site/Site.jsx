@@ -377,45 +377,130 @@ function Word({ p, range, children }) {
 }
 
 /* ---------- Preço ---------- */
-const INCLUDES = [
-  'Agente de IA atendendo no WhatsApp 24 horas',
-  'Base de conhecimento com seus produtos, preços e regras',
-  'Painel de conversas com “assumir” e “devolver ao agente”',
-  'Vários números de WhatsApp conectados',
-  'Equipe com papéis: dono, gestor, vendedor e auditor',
-  'Área de teste do agente antes de ligar',
+const GROUPS = [
+  {
+    icon: MessageCircle,
+    title: 'Atendimento',
+    items: ['Agente de IA respondendo no WhatsApp 24 horas', 'Responde só com a sua base de conhecimento', 'Passa a conversa para a equipe quando precisa'],
+  },
+  {
+    icon: LayoutDashboard,
+    title: 'Gestão',
+    items: ['Painel com todas as conversas em tempo real', '“Assumir” e “devolver ao agente” com um clique', 'Área de teste para ensaiar antes de ligar'],
+  },
+  {
+    icon: Users,
+    title: 'Equipe e números',
+    items: ['Vários números de WhatsApp conectados', 'Dono, gestor, vendedor e auditor com acessos diferentes', 'Escolha do modelo de IA: mais inteligente ou mais econômico'],
+  },
 ]
+const PRICE_STEPS = [
+  ['I', 'Crie a conta'],
+  ['II', 'Conecte o WhatsApp'],
+  ['III', 'Ensine o agente'],
+]
+
 function Pricing() {
   const ref = useRef(null)
   const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start end', 'center center'] })
-  const scale = useTransform(p, [0, 1], [0.9, 1])
-  const rot = useTransform(p, [0, 1], [6, 0])
+  const scale = useTransform(p, [0, 1], [0.92, 1])
+  const rot = useTransform(p, [0, 1], [5, 0])
+  const colL = useTransform(p, [0, 1], [-40, 0])
+  const colR = useTransform(p, [0, 1], [40, 0])
+  const glow = useTransform(p, [0, 1], [0, 1])
   return (
     <section className="s-section s-pricing" id="preco" ref={ref}>
+      <motion.div className="s-pricing-glow" style={{ opacity: glow }} aria-hidden="true" />
       <motion.header className="s-head center" {...reveal}>
         <span className="s-eyebrow">Preço</span>
         <h2>Um plano. Tudo incluído.</h2>
+        <p className="s-head-sub">Sem módulos extras e sem cobrança por mensagem. Você paga um valor por mês e usa tudo.</p>
       </motion.header>
-      <motion.div className="s-price-card" style={{ scale, rotateX: rot }}>
-        <div className="s-price-top">
-          <span className="s-price-name">TALIS</span>
-          <div className="s-price-value">
-            <span className="s-price-cur">R$</span>
-            <span className="s-price-num">2.497</span>
-            <span className="s-price-per">/mês</span>
+
+      <div className="s-pricing-grid">
+        <motion.div className="s-column s-column-l" style={{ x: colL }} aria-hidden="true" />
+
+        <motion.div className="s-price-card" style={{ scale, rotateX: rot }}>
+          <div className="s-price-top">
+            <div className="s-price-badge">
+              <Logo word={false} /> <span>Plano único</span>
+            </div>
+            <div className="s-price-value">
+              <span className="s-price-cur">R$</span>
+              <span className="s-price-num">
+                <Count to={2497} />
+              </span>
+              <span className="s-price-per">/mês</span>
+            </div>
+            <p>Para empresas que vendem pelo WhatsApp e querem atender todo mundo, a qualquer hora.</p>
           </div>
-          <p>Para empresas que vendem pelo WhatsApp e querem atendimento sem fila.</p>
-        </div>
-        <ul className="s-price-list">
-          {INCLUDES.map((t) => (
-            <li key={t}>{t}</li>
-          ))}
-        </ul>
-        <a href={`${APP}?cadastro`} className="s-btn block">
-          Começar agora <ArrowRight size={16} />
-        </a>
-      </motion.div>
+
+          <a href={`${APP}?cadastro`} className="s-btn block">
+            Começar agora <ArrowRight size={16} />
+          </a>
+
+          <ol className="s-price-steps">
+            {PRICE_STEPS.map(([n, t]) => (
+              <li key={n}>
+                <b>{n}</b>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ol>
+          <p className="s-price-note">Você começa pelo painel e conecta o número lendo um QR Code.</p>
+        </motion.div>
+
+        <motion.div className="s-column s-column-r" style={{ x: colR }} aria-hidden="true" />
+      </div>
+
+      <div className="s-includes">
+        {GROUPS.map((g, i) => (
+          <motion.article key={g.title} className="s-include" {...reveal} transition={{ ...reveal.transition, delay: i * 0.09 }}>
+            <span className="s-include-ic">
+              <g.icon size={20} />
+            </span>
+            <h3>{g.title}</h3>
+            <ul>
+              {g.items.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          </motion.article>
+        ))}
+      </div>
     </section>
+  )
+}
+
+/* Número que sobe de zero até o valor quando a seção aparece. */
+function Count({ to }) {
+  const ref = useRef(null)
+  const [v, setV] = useState(to)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    setV(0)
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return
+        io.disconnect()
+        const t0 = performance.now()
+        const tick = (now) => {
+          const k = Math.min(1, (now - t0) / 1400)
+          setV(Math.round(to * (1 - Math.pow(1 - k, 3))))
+          if (k < 1) requestAnimationFrame(tick)
+        }
+        requestAnimationFrame(tick)
+      },
+      { threshold: 0.6 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [to])
+  return (
+    <span ref={ref} aria-label={to.toLocaleString('pt-BR')}>
+      {v.toLocaleString('pt-BR')}
+    </span>
   )
 }
 
