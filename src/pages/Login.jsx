@@ -18,6 +18,7 @@ export default function Login({ onLogin }) {
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
   const isLogin = mode === 'login'
   const hora = useHora()
+  const clima = useClima()
 
   async function submit(e) {
     e.preventDefault()
@@ -40,8 +41,9 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className={`login is-${periodo(hora)}`}>
-      <Landscape hora={hora} />
+    <div className={`login is-${periodo(hora)} clima-${clima}`}>
+      <Landscape hora={hora} clima={clima} />
+      <Precip clima={clima} />
       <div className="login-grain" aria-hidden="true" />
 
       <motion.div
@@ -296,7 +298,7 @@ function useHora() {
 // arco no céu: entra pela esquerda, sobe e desce pela direita
 const arc = (p) => ({ x: -40 + p * 1680, y: 290 - Math.sin(Math.PI * p) * 220 })
 
-function Landscape({ hora }) {
+function Landscape({ hora, clima }) {
   const { layers, temple, stars } = useMemo(() => {
     const W = 1600
     const H = 900
@@ -348,7 +350,7 @@ function Landscape({ hora }) {
     return { layers, temple: { x: tx, y: L.f(tx) + 3 }, stars }
   }, [])
 
-  const s = sceneAt(hora)
+  const s = applyClima(sceneAt(hora), clima)
   const sunP = (hora - 6) / 12 // 6h → 18h
   const moonP = (((hora - 18 + 24) % 24) / 12) // 18h → 6h
   const sun = arc(Math.min(1, Math.max(0, sunP)))
@@ -368,6 +370,9 @@ function Landscape({ hora }) {
           <stop offset="0" stopColor="#fff" stopOpacity="0" />
           <stop offset="1" stopColor="#fff" stopOpacity="0.35" />
         </linearGradient>
+        <filter id="cloudblur" x="-20%" y="-50%" width="140%" height="200%">
+          <feGaussianBlur stdDeviation="30" />
+        </filter>
         <radialGradient id="glow">
           <stop offset="0" style={{ stopColor: s.glow }} stopOpacity="0.9" />
           <stop offset="0.25" style={{ stopColor: s.glow }} stopOpacity="0.35" />
@@ -398,16 +403,226 @@ function Landscape({ hora }) {
         <circle cx={moon.x} cy={moon.y} r="30" fill="#e9e5dc" mask="url(#moon-cut)" />
       </g>
 
+      {/* nuvens: ficam na frente do sol e da lua, atrás das serras */}
+      <g className="login-clouds" filter="url(#cloudblur)" style={{ opacity: s.cloud }}>
+        {CLOUDS.map((c, k) => (
+          <ellipse key={k} className="login-cloud" cx={c.x} cy={c.y} rx={c.rx} ry={c.ry} style={{ fill: s.cloudColor, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }} />
+        ))}
+      </g>
+
       {layers.map((l, i) => (
         <g key={i}>
           <path d={l.d} style={{ fill: s.ridges[i] }} />
           {i < 5 && <path d={l.d} fill="url(#mist)" style={{ opacity: s.mist }} />}
           {i === 2 && <Temple x={temple.x} y={temple.y} color={s.ridges[2]} lit={s.moon > 0.5} />}
           {/* pássaros voam entre a serra do fundo e a seguinte */}
-          {i === 0 && <Birds night={s.moon > 0.5} />}
+          {i === 0 && s.birds && <Birds night={s.moon > 0.5} />}
         </g>
       ))}
     </svg>
+  )
+}
+
+/* ---------- Clima do lugar de quem acessa ----------
+   Local aproximado pelo IP (sem pedir permissão) + tempo atual no Open-Meteo (grátis, sem chave).
+   Se qualquer etapa falhar, a cena segue só o horário. Em desenvolvimento: /?clima=chuva
+   (limpo, nublado, neblina, chuva, tempestade, neve). */
+const CLIMA_KEY = 'talis_clima'
+
+function codigoParaClima(code, nuvens) {
+  if (code >= 95) return 'tempestade'
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'chuva'
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'neve'
+  if (code === 45 || code === 48) return 'neblina'
+  if (code === 2 || code === 3 || nuvens >= 60) return 'nublado'
+  return 'limpo'
+}
+
+async function buscarClima() {
+  const loc = await fetch('https://ipwho.is/?fields=success,latitude,longitude').then((r) => r.json())
+  if (!loc.success) throw new Error('sem local')
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=weather_code,cloud_cover`
+  const w = await fetch(url).then((r) => r.json())
+  return codigoParaClima(w.current.weather_code, w.current.cloud_cover)
+}
+
+function useClima() {
+  const forced = import.meta.env.DEV ? new URLSearchParams(location.search).get('clima') : null
+  const [clima, setClima] = useState(() => {
+    if (forced) return forced
+    try {
+      const c = JSON.parse(localStorage.getItem(CLIMA_KEY) || 'null')
+      if (c && Date.now() - c.t < 20 * 60_000) return c.v
+    } catch {}
+    return 'limpo'
+  })
+  useEffect(() => {
+    if (forced) return
+    let vivo = true
+    try {
+      const c = JSON.parse(localStorage.getItem(CLIMA_KEY) || 'null')
+      if (c && Date.now() - c.t < 20 * 60_000) return
+    } catch {}
+    buscarClima()
+      .then((v) => {
+        if (!vivo) return
+        setClima(v)
+        try {
+          localStorage.setItem(CLIMA_KEY, JSON.stringify({ t: Date.now(), v }))
+        } catch {}
+      })
+      .catch(() => {})
+    return () => {
+      vivo = false
+    }
+  }, [])
+  return clima
+}
+
+// quanto cada clima cobre o céu e o que acontece com sol, estrelas, pássaros e névoa
+const CLIMAS = {
+  limpo: { cloud: 0, fog: 0, dark: 0 },
+  nublado: { cloud: 0.7, fog: 0, dark: 0.3 },
+  neblina: { cloud: 0.5, fog: 1, dark: 0.25 },
+  chuva: { cloud: 0.92, fog: 0.25, dark: 0.55 },
+  tempestade: { cloud: 1, fog: 0.2, dark: 0.75 },
+  neve: { cloud: 0.8, fog: 0.5, dark: 0.3 },
+}
+const cinza = (c, k) => {
+  const [r, g, b] = hex(c)
+  const l = Math.round(0.3 * r + 0.59 * g + 0.11 * b)
+  const alvo = '#' + [l, l, l].map((v) => v.toString(16).padStart(2, '0')).join('')
+  return mixHex(c, alvo, k)
+}
+const escurece = (c, k) => mixHex(c, '#000000', k)
+
+function applyClima(sc, clima) {
+  const k = CLIMAS[clima] ?? CLIMAS.limpo
+  const noite = sc.moon > 0.5
+  const f = (c) => escurece(cinza(c, Math.min(1, k.cloud * 0.8)), k.dark * (noite ? 0.3 : 0.45))
+  return {
+    ...sc,
+    sky: sc.sky.map(f),
+    ridges: sc.ridges.map((c) => escurece(cinza(c, k.cloud * 0.5), k.dark * 0.25)),
+    mist: Math.min(0.95, sc.mist + k.fog * 0.6),
+    sun: sc.sun * (1 - k.cloud * 0.95),
+    moon: sc.moon * (1 - k.cloud * 0.85),
+    stars: sc.stars * (1 - k.cloud),
+    cloud: k.cloud,
+    cloudColor: noite ? '#262626' : mixHex('#d6d6d3', '#383838', Math.min(1, k.dark * 1.5)),
+    birds: !['chuva', 'tempestade', 'neve'].includes(clima),
+  }
+}
+
+// nuvens: posições fixas, cada uma à deriva no próprio ritmo
+const CLOUDS = [
+  { x: 150, y: 150, rx: 330, ry: 62, dur: 70, delay: -10 },
+  { x: 520, y: 90, rx: 280, ry: 52, dur: 90, delay: -40 },
+  { x: 880, y: 175, rx: 380, ry: 70, dur: 80, delay: -25 },
+  { x: 1230, y: 105, rx: 300, ry: 56, dur: 100, delay: -60 },
+  { x: 1500, y: 190, rx: 340, ry: 64, dur: 75, delay: -5 },
+  { x: 330, y: 250, rx: 260, ry: 46, dur: 110, delay: -50 },
+  { x: 1050, y: 270, rx: 300, ry: 50, dur: 95, delay: -30 },
+]
+
+/* Chuva, neve e relâmpago: camada por cima da paisagem e por trás do card. */
+function Precip({ clima }) {
+  const ref = useRef(null)
+  const [flash, setFlash] = useState(false)
+  const tipo = clima === 'chuva' || clima === 'tempestade' ? 'chuva' : clima === 'neve' ? 'neve' : null
+  const forte = clima === 'tempestade'
+
+  useEffect(() => {
+    const c = ref.current
+    if (!tipo || !c || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = c.getContext('2d')
+    let raf
+    let W = 0
+    let H = 0
+    let drops = []
+    const novo = (spread) => ({
+      x: Math.random() * (W + 200) - 100,
+      y: spread ? Math.random() * H : -20 - Math.random() * 100,
+      v: tipo === 'chuva' ? 900 + Math.random() * 600 : 40 + Math.random() * 60,
+      l: tipo === 'chuva' ? 10 + Math.random() * 16 : 1.2 + Math.random() * 2.2,
+      a: 0.22 + Math.random() * 0.45,
+      s: Math.random() * Math.PI * 2,
+    })
+    const ajusta = () => {
+      const dpr = Math.min(2, devicePixelRatio || 1)
+      W = c.clientWidth
+      H = c.clientHeight
+      c.width = W * dpr
+      c.height = H * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      const n = Math.round((W * H) / (tipo === 'chuva' ? (forte ? 1400 : 2300) : 7000))
+      drops = Array.from({ length: n }, () => novo(true))
+    }
+    ajusta()
+    const ro = new ResizeObserver(ajusta)
+    ro.observe(c)
+    let last = performance.now()
+    const quadro = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000)
+      last = now
+      ctx.clearRect(0, 0, W, H)
+      if (tipo === 'chuva') {
+        ctx.lineWidth = 1.4
+        ctx.lineCap = 'round'
+        const vento = forte ? 0.28 : 0.14
+        for (const d of drops) {
+          d.y += d.v * dt
+          d.x += d.v * vento * dt
+          if (d.y > H + 20) Object.assign(d, novo(false))
+          ctx.strokeStyle = `rgba(214,222,235,${d.a})`
+          ctx.beginPath()
+          ctx.moveTo(d.x, d.y)
+          ctx.lineTo(d.x - d.l * vento, d.y - d.l)
+          ctx.stroke()
+        }
+      } else {
+        for (const d of drops) {
+          d.y += d.v * dt
+          d.s += dt
+          d.x += Math.sin(d.s) * 18 * dt
+          if (d.y > H + 10) Object.assign(d, novo(false))
+          ctx.fillStyle = `rgba(255,255,255,${d.a + 0.25})`
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, d.l, 0, Math.PI * 2)
+          ctx.fill()
+        }
+      }
+      raf = requestAnimationFrame(quadro)
+    }
+    raf = requestAnimationFrame(quadro)
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+    }
+  }, [tipo, forte])
+
+  // relâmpago: clarão duplo em intervalos irregulares
+  useEffect(() => {
+    if (!forte || matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let t
+    const ciclo = () => {
+      t = setTimeout(() => {
+        setFlash(true)
+        setTimeout(() => setFlash(false), 90)
+        setTimeout(() => setFlash(true), 190)
+        setTimeout(() => setFlash(false), 320)
+        ciclo()
+      }, 4000 + Math.random() * 9000)
+    }
+    ciclo()
+    return () => clearTimeout(t)
+  }, [forte])
+
+  return (
+    <>
+      {tipo && <canvas ref={ref} className="login-precip" aria-hidden="true" />}
+      {forte && <div className={`login-flash ${flash ? 'on' : ''}`} aria-hidden="true" />}
+    </>
   )
 }
 

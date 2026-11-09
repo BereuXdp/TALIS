@@ -56,3 +56,7 @@ Fica em `site/index.html` (código em `src/site`). Em desenvolvimento: http://lo
 
 - Imagens das estátuas: `public/site` (geradas por `node tools/site-images.mjs <busto> <leitor>`).
 - Links "Entrar" e "Começar" apontam para o painel. Em produção defina `VITE_APP_URL` (ex.: https://app.seudominio.com.br). `?cadastro` abre o painel direto em "Criar conta".
+
+## Login com horário e clima
+
+O fundo do login segue a hora e o clima de quem acessa (nuvens, chuva, tempestade com relâmpago, neve e neblina). O local vem aproximado pelo IP (ipwho.is) e o tempo do Open-Meteo, sem chave e sem pedir permissão; o resultado fica 20 min no navegador. Se algo falhar, a cena usa só o horário. Em desenvolvimento, teste com `/?login&hora=22&clima=tempestade` (limpo, nublado, neblina, chuva, tempestade, neve).
