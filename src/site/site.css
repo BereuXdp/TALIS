@@ -341,3 +341,65 @@ a { color: inherit; text-decoration: none; }
 /* brilho do preço nunca passa da largura da seção; e a página nunca rola para o lado */
 .s-pricing-glow { width: min(900px, 100%); }
 html, body { overflow-x: clip; }
+
+/* ==========================================================
+   Cena presa na tela (Ouve · Entende · Vende)
+   ========================================================== */
+.s-cine { position: relative; height: 420vh; }
+.s-cine-stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; place-items: center; isolation: isolate; }
+.s-cine-vignette { position: absolute; inset: 0; z-index: 0; background: radial-gradient(60% 55% at 50% 48%, rgba(233, 201, 138, 0.1), transparent 70%), radial-gradient(90% 90% at 50% 50%, transparent 40%, #000 100%); }
+
+.s-cine-ring { position: absolute; z-index: 1; width: min(82vmin, 820px); aspect-ratio: 1; left: 50%; top: 50%; translate: -50% -50%; overflow: visible; fill: none; pointer-events: none; }
+.s-cine-ring .ring-base { stroke: rgba(242, 239, 233, 0.1); stroke-width: 0.5; }
+.s-cine-ring .ring-line { stroke: #f2efe9; stroke-width: 1.1; stroke-linecap: round; filter: drop-shadow(0 0 6px rgba(255, 244, 224, 0.9)) drop-shadow(0 0 22px rgba(233, 201, 138, 0.55)); }
+
+.s-cine-bust { position: relative; z-index: 3; height: min(80vh, 860px); aspect-ratio: 959 / 1264; will-change: transform; }
+.s-cine-bust img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 40px 70px rgba(0, 0, 0, 0.7)); }
+.s-cine-bust .s-cine-sheen { filter: brightness(2.1) contrast(1.15) saturate(0.7); mix-blend-mode: screen; opacity: 0.85;
+  -webkit-mask-image: linear-gradient(105deg, transparent calc(var(--sweep, 0) * 150% - 40%), #000 calc(var(--sweep, 0) * 150% - 22%), transparent calc(var(--sweep, 0) * 150% - 4%));
+  mask-image: linear-gradient(105deg, transparent calc(var(--sweep, 0) * 150% - 40%), #000 calc(var(--sweep, 0) * 150% - 22%), transparent calc(var(--sweep, 0) * 150% - 4%)); }
+
+.s-cine-word { position: absolute; z-index: 2; top: 50%; translate: 0 -50%; width: min(52vw, 760px); display: flex; flex-direction: column; gap: 18px; pointer-events: none; }
+.s-cine-word.l { left: clamp(16px, 5vw, 72px); align-items: flex-start; text-align: left; }
+.s-cine-word.r { right: clamp(16px, 5vw, 72px); align-items: flex-end; text-align: right; }
+.s-cine-word h3 { font: 500 clamp(64px, 13vw, 210px)/0.9 var(--display); letter-spacing: 0.01em; color: var(--text); text-shadow: 0 10px 60px rgba(0, 0, 0, 0.5); }
+.s-cine-word p { max-width: 34ch; font-size: clamp(14px, 1.3vw, 18px); color: var(--text-2); position: relative; z-index: 4; }
+.s-cine-word.l p { margin-left: 4px; }
+.s-cine-word.r p { margin-right: 4px; }
+
+.s-cine-hud { position: absolute; z-index: 5; left: clamp(16px, 5vw, 72px); right: clamp(16px, 5vw, 72px); bottom: 32px; display: flex; align-items: center; gap: 16px; font: 500 12px var(--display); letter-spacing: 0.2em; color: var(--text-3); }
+.s-cine-bar { flex: 1; height: 1px; background: var(--line-2); overflow: hidden; }
+.s-cine-bar i { display: block; height: 100%; background: var(--warm); transform-origin: left; }
+
+@media (max-width: 1000px) {
+  .s-cine { height: 360vh; }
+  .s-cine-bust { height: min(58vh, 640px); translate: 0 6%; }
+  .s-cine-ring { width: min(92vw, 560px); }
+  .s-cine-word { top: 16%; translate: 0 0; width: calc(100% - 32px); }
+  .s-cine-word.l, .s-cine-word.r { left: 16px; right: 16px; align-items: center; text-align: center; }
+  .s-cine-word h3 { font-size: clamp(60px, 20vw, 120px); }
+  .s-cine-word p { font-size: 14px; max-width: 30ch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .s-cine { height: auto; padding: 80px 0; }
+  .s-cine-stick { position: static; height: auto; display: flex; flex-direction: column; gap: 40px; }
+  .s-cine-word { position: static; translate: 0; width: auto; opacity: 1 !important; transform: none !important; }
+  .s-cine-bust, .s-cine-ring, .s-cine-hud, .s-cine-vignette { display: none; }
+}
+
+/* palavras um pouco menores: cabem ao lado do busto sem serem engolidas */
+.s-cine-word h3 { font-size: clamp(60px, 10.5vw, 170px); }
+.s-cine-word p { max-width: 30ch; }
+@media (max-width: 1000px) { .s-cine-word h3 { font-size: clamp(60px, 20vw, 120px); } }
+
+.s-cine-word h3 { font-size: calc(clamp(60px, 10.5vw, 170px) * var(--k, 1)); }
+@media (max-width: 1000px) { .s-cine-word h3 { font-size: calc(clamp(60px, 20vw, 120px) * var(--k, 1)); } }
+
+/* celular: texto em cima, busto menor e mais baixo, anel acompanha */
+@media (max-width: 1000px) {
+  .s-cine-word { top: 11%; }
+  .s-cine-bust { height: min(46vh, 520px); translate: 0 22%; }
+  .s-cine-ring { width: min(84vw, 480px); top: 66%; }
+  .s-cine-word h3 { font-size: calc(clamp(56px, 17vw, 110px) * var(--k, 1)); }
+  .s-cine-word p { max-width: 28ch; }
+}

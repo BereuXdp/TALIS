@@ -63,3 +63,4 @@ O fundo do login segue a hora e o clima de quem acessa (nuvens, chuva, tempestad
 
 - Animações de scroll com Anime.js v4 em `src/site/anime.js` (títulos palavra por palavra, cards em cascata, zoom da foto guiado pelo scroll). O friso e o templo têm animação própria e não passam por ele.
 - A coluna jônica do preço é a foto recortada por `node tools/column.mjs <foto>` (a silhueta usa medidas da foto original; se trocar a foto, ajuste os pontos em `ROWS`).
+- Cena presa na tela "Ouve · Entende · Vende" (`Cine` em `src/site/Site.jsx`): palavras gigantes passam por trás do busto, anel de luz que se desenha e reflexo que cruza a pedra, tudo guiado pelo scroll.

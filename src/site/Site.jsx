@@ -29,6 +29,7 @@ export default function Site() {
       <main>
         <Hero />
         <Frieze />
+        <Cine />
         <Steps />
         <Study />
         <Demo />
@@ -177,6 +178,81 @@ function Frieze() {
       </div>
       <div className="s-key" />
     </div>
+  )
+}
+
+/* ---------- Cena presa na tela: "Ouve. Entende. Vende." ----------
+   Referências (Pinterest): escultura saindo do escuro, anel de luz atrás e palavras gigantes
+   que passam por trás da estátua. Tudo é guiado pelo scroll (Motion). */
+const CINE = [
+  { word: 'Ouve', k: 1, text: 'Lê a mensagem do cliente no WhatsApp, a qualquer hora, sem deixar ninguém esperando.', side: 'l' },
+  { word: 'Entende', k: 0.8, text: 'Procura a resposta na base de conhecimento que você cadastrou, e só fala o que sabe.', side: 'r' },
+  { word: 'Vende', k: 0.95, text: 'Conduz a conversa até o pedido, ou chama a sua equipe quando precisa de uma pessoa.', side: 'l' },
+]
+
+function Cine() {
+  const ref = useRef(null)
+  const { scrollYProgress: p } = useScroll({ target: ref, offset: ['start start', 'end end'] })
+  // o busto e o anel se afastam para o lado oposto da palavra, para ela continuar legível
+  const wide = typeof matchMedia !== 'undefined' && matchMedia('(min-width: 1001px)').matches
+  const shift = wide ? 13 : 0
+  const bustX = useTransform(p, [0, 0.27, 0.37, 0.58, 0.68, 1], [shift, shift, -shift, -shift, shift, shift].map((v) => v + 'vw'))
+  const bustScale = useTransform(p, [0, 1], [0.8, 1.16])
+  const bustY = useTransform(p, [0, 1], [50, -30])
+  const ringDraw = useTransform(p, [0, 0.3], [0, 1])
+  const ringScale = useTransform(p, [0, 1], [0.88, 1.18])
+  const ringRot = useTransform(p, [0, 1], [-30, 120])
+  const sweep = useTransform(p, [0.05, 0.95], [0, 1])
+  const fill = useTransform(p, [0, 1], [0, 1])
+  const [idx, setIdx] = useState(0)
+  useEffect(() => p.on('change', (v) => setIdx(Math.min(CINE.length - 1, Math.max(0, Math.floor((v - 0.04) / 0.31))))), [p])
+
+  return (
+    <section className="s-cine" ref={ref} aria-label="Como o TALIS atende">
+      <div className="s-cine-stick">
+        <div className="s-cine-vignette" aria-hidden="true" />
+
+        {/* anel de luz que se desenha com o scroll */}
+        <motion.svg className="s-cine-ring" viewBox="0 0 200 200" style={{ x: bustX, scale: ringScale, rotate: ringRot }} aria-hidden="true">
+          <circle cx="100" cy="100" r="96" className="ring-base" />
+          <motion.circle cx="100" cy="100" r="96" className="ring-line" style={{ pathLength: ringDraw }} />
+        </motion.svg>
+
+        {/* palavras gigantes ATRÁS do busto (o busto é recortado, então cobre parte delas) */}
+        {CINE.map((c, k) => (
+          <CineWord key={c.word} c={c} k={k} p={p} />
+        ))}
+
+        <motion.div className="s-cine-bust" style={{ x: bustX, scale: bustScale, y: bustY }} aria-hidden="true">
+          <img src="/site/busto-hero.webp" alt="" />
+          {/* reflexo de luz que atravessa a escultura (clareia só onde há pedra) */}
+          <motion.img className="s-cine-sheen" src="/site/busto-hero.webp" alt="" style={{ '--sweep': sweep }} />
+        </motion.div>
+
+        <div className="s-cine-hud" aria-hidden="true">
+          <span className="tnum">0{idx + 1}</span>
+          <div className="s-cine-bar">
+            <motion.i style={{ scaleX: fill }} />
+          </div>
+          <span className="tnum">0{CINE.length}</span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function CineWord({ c, k, p }) {
+  const start = 0.04 + k * 0.31
+  const last = k === CINE.length - 1
+  const from = c.side === 'l' ? -90 : 90
+  const o = useTransform(p, [start - 0.04, start + 0.05, start + 0.24, start + 0.31], last ? [0, 1, 1, 1] : [0, 1, 1, 0])
+  const x = useTransform(p, [start - 0.04, start + 0.06, start + 0.24, start + 0.31], last ? [from, 0, 0, 0] : [from, 0, 0, -from * 0.8])
+  const sc = useTransform(p, [start - 0.04, start + 0.06], [0.94, 1])
+  return (
+    <motion.div className={`s-cine-word ${c.side}`} style={{ opacity: o, x, '--k': c.k }}>
+      <motion.h3 style={{ scale: sc }}>{c.word}.</motion.h3>
+      <p>{c.text}</p>
+    </motion.div>
   )
 }
 
