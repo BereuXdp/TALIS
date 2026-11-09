@@ -62,3 +62,4 @@ Fica em `site/index.html` (código em `src/site`). Em desenvolvimento: http://lo
 O fundo do login segue a hora e o clima de quem acessa (nuvens, chuva, tempestade com relâmpago, neve e neblina). O local vem aproximado pelo IP (ipwho.is) e o tempo do Open-Meteo, sem chave e sem pedir permissão; o resultado fica 20 min no navegador. Se algo falhar, a cena usa só o horário. Em desenvolvimento, teste com `/?login&hora=22&clima=tempestade` (limpo, nublado, neblina, chuva, tempestade, neve).
 
 - Animações de scroll com Anime.js v4 em `src/site/anime.js` (títulos palavra por palavra, cards em cascata, zoom da foto guiado pelo scroll). O friso e o templo têm animação própria e não passam por ele.
+- A coluna jônica do preço é a foto recortada por `node tools/column.mjs <foto>` (a silhueta usa medidas da foto original; se trocar a foto, ajuste os pontos em `ROWS`).

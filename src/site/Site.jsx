@@ -423,7 +423,9 @@ function Pricing() {
       </motion.header>
 
       <div className="s-pricing-grid">
-        <motion.div className="s-column s-column-l" style={{ x: colL }} aria-hidden="true" />
+        <motion.div className="s-pillar s-pillar-l" style={{ x: colL }} aria-hidden="true">
+          <img src="/site/coluna.webp" alt="" loading="lazy" />
+        </motion.div>
 
         <motion.div className="s-price-card" style={{ scale, rotateX: rot }}>
           <div className="s-price-top">
@@ -455,7 +457,9 @@ function Pricing() {
           <p className="s-price-note">Você começa pelo painel e conecta o número lendo um QR Code.</p>
         </motion.div>
 
-        <motion.div className="s-column s-column-r" style={{ x: colR }} aria-hidden="true" />
+        <motion.div className="s-pillar s-pillar-r" style={{ x: colR }} aria-hidden="true">
+          <img src="/site/coluna.webp" alt="" loading="lazy" />
+        </motion.div>
       </div>
 
       <div className="s-includes">
