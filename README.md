@@ -54,7 +54,7 @@ node tools/logo.mjs
 
 Fica em `site/index.html` (código em `src/site`). Em desenvolvimento: http://localhost:5180/site/
 
-- Imagens das estátuas: `public/site` (geradas por `node tools/site-images.mjs <busto> <leitor>`).
+- Imagens das estátuas: `public/site`. O busto do topo é gerado por `node tools/cutout.mjs <imagem-com-fundo-transparente>` (aplica a luz e gera dois tamanhos); a do leitor por `node tools/site-images.mjs`.
 - Links "Entrar" e "Começar" apontam para o painel. Em produção defina `VITE_APP_URL` (ex.: https://app.seudominio.com.br). `?cadastro` abre o painel direto em "Criar conta".
 
 ## Login com horário e clima

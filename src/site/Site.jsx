@@ -113,10 +113,12 @@ function Hero() {
 
       <motion.div className="s-hero-bust" style={{ y: bustY, scale: bustS, opacity: bustO }} aria-hidden="true">
         <motion.div className="s-halo on" style={{ rotate: haloR }} />
-        {/* a imagem fica num quadro do tamanho exato dela; a máscara funde as bordas no fundo */}
-        <div className="s-bust-frame">
+        {/* busto recortado (fundo transparente), com a luz já aplicada em tools/cutout.mjs */}
+        <div className="s-bust-frame cutout">
           <motion.img
-            src="/site/busto.webp"
+            src="/site/busto-hero.webp"
+            srcSet="/site/busto-hero-800.webp 577w, /site/busto-hero.webp 959w"
+            sizes="(max-width: 1000px) 70vw, 40vw"
             alt=""
             className="s-bust-img"
             initial={{ opacity: 0, scale: 1.04 }}
