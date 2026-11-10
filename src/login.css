@@ -113,3 +113,9 @@
 .owl-eyes { transform-box: fill-box; transform-origin: center; animation: owl-blink 6s ease-in-out infinite; }
 @keyframes owl-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
 @media (prefers-reduced-motion: reduce) { .bats { display: none; } .owl-eyes { animation: none; } }
+
+/* botão para voltar à landing */
+.login-back { position: absolute; z-index: 5; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px 9px 12px; border-radius: 999px; font-size: 13px; font-weight: 500; color: #f2efe9; text-decoration: none; background: rgba(38, 38, 38, 0.35); border: 1px solid rgba(242, 239, 233, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background 0.2s, transform 0.2s; }
+.login-back:hover { background: rgba(38, 38, 38, 0.55); }
+.login-back:active { transform: scale(0.97); }
+.login-back:focus-visible { outline: 2px solid #f2efe9; outline-offset: 2px; }
